@@ -149,7 +149,7 @@ export default function PatientDashboard() {
                     <View>
                         <Text style={styles.greeting}>Good Morning,</Text>
                         <Text style={styles.name}>{profile?.name}</Text>
-                        <Text style={styles.roleLabel}>Loved One</Text>
+                        <Text style={styles.roleLabel}>Family Member</Text>
                     </View>
                     <View style={styles.progressCircle}>
                         <Text style={styles.progressText}>{adherence}%</Text>

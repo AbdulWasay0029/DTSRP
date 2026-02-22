@@ -49,7 +49,7 @@ export default function CaregiverDashboard() {
                     <View>
                         <Text style={styles.greeting}>Good Morning,</Text>
                         <Text style={styles.name}>{profile?.name}</Text>
-                        <Text style={styles.roleLabel}>Guardian</Text>
+                        <Text style={styles.roleLabel}>Family Guardian</Text>
                     </View>
                 </View>
             </View>

@@ -40,7 +40,7 @@ export default function FamilyScreen() {
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.inviteCodeCard}>
                     <Text style={styles.inviteTitle}>Your Invite Code</Text>
-                    <Text style={styles.inviteDesc}>Share this code with your guardian so they can monitor your health stats.</Text>
+                    <Text style={styles.inviteDesc}>Share this code with your family guardian so they can monitor your health stats.</Text>
                     <View style={styles.codeBox}>
                         <Text style={styles.codeText}>{profile?.inviteCode}</Text>
                     </View>
@@ -72,9 +72,9 @@ export default function FamilyScreen() {
                 )}
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Connected Guardians</Text>
+                    <Text style={styles.sectionTitle}>Family Guardians</Text>
                     {approvedConnections.length === 0 && (
-                        <Text style={styles.emptyText}>No guardians connected yet.</Text>
+                        <Text style={styles.emptyText}>No family guardians connected yet.</Text>
                     )}
                     {approvedConnections.map(c => (
                         <View key={c.id} style={styles.connCard}>
@@ -129,7 +129,7 @@ export default function FamilyScreen() {
                                     </View>
                                 </View>
                                 <Text style={styles.profileDesc}>
-                                    This guardian wants to connect to monitor your health and help coordinate your care.
+                                    This family guardian wants to connect to monitor your health and help coordinate your care.
                                 </Text>
                             </View>
                         </View>

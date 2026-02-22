@@ -17,7 +17,7 @@ const SLIDES = [
     },
     {
         title: 'Family Connection',
-        subtitle: 'Stay connected. Share your health updates with family for total peace of mind.',
+        subtitle: 'Stay connected. Share your health updates with your family guardian for total peace of mind.',
         badgeIcon: <Users size={36} color="#19e66f" />,
     },
     {

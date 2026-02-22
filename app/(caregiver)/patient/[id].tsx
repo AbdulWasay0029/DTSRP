@@ -137,7 +137,6 @@ export default function PatientDetailScreen() {
                     <Text style={styles.profileStatus}>{overallStatusDesc}</Text>
 
                     <TouchableOpacity style={styles.callBtn} activeOpacity={0.9} onPress={handleCall}>
-                        <Phone size={20} color="#0f172a" fill="#0f172a" />
                         <Text style={styles.callBtnText}>Call {patient.name.split(' ')[0]}</Text>
                     </TouchableOpacity>
                     <Text style={styles.roleLabel}>Family Member</Text>

@@ -79,7 +79,7 @@ export default function Register() {
                             <View style={[styles.roleIconBox, role === 'patient' && styles.roleIconBoxActive]}>
                                 <User size={28} color={role === 'patient' ? '#fff' : '#475569'} />
                             </View>
-                            <Text style={styles.roleCardTitle}>Loved One</Text>
+                            <Text style={styles.roleCardTitle}>Family Member</Text>
                             <Text style={styles.roleCardDesc}>Manage my health</Text>
                             <View style={styles.roleCheck}>
                                 {role === 'patient' ? (
@@ -98,7 +98,7 @@ export default function Register() {
                             <View style={[styles.roleIconBox, role === 'caregiver' && styles.roleIconBoxActive]}>
                                 <Users size={28} color={role === 'caregiver' ? '#fff' : '#475569'} />
                             </View>
-                            <Text style={styles.roleCardTitle}>Guardian</Text>
+                            <Text style={styles.roleCardTitle}>Family Guardian</Text>
                             <Text style={styles.roleCardDesc}>Protect my family</Text>
                             <View style={styles.roleCheck}>
                                 {role === 'caregiver' ? (
