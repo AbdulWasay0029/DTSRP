@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Bell, ArrowRight, CheckCircle2, AlertTriangle, Plus } from 'lucide-react-native';
+import Animated, { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
 import { useAuthStore } from '../../../libs/store';
 import { useMedicineStore } from '../../../libs/medicineStore';
 
@@ -67,7 +68,7 @@ export default function CaregiverDashboard() {
                     {patients.length === 0 ? (
                         <Text style={styles.emptyText}>No connected patients yet.</Text>
                     ) : (
-                        patients.map((p) => {
+                        patients.map((p, idx) => {
                             const pMeds = medicines.filter(m => m.patientId === p.id);
                             let totalDoses = 0;
                             let takenDoses = 0;
@@ -90,11 +91,13 @@ export default function CaregiverDashboard() {
                             const isAlert = missedDoses > 0;
                             const statusText = isAlert ? 'Alert' : 'Stable';
 
-                            let statusDesc = isAlert ? `Missed: ${lastMissedMedName || 'Medication'}` : 'On track for today';
+                            let statusDesc = isAlert ? `Missed: ${lastMissedMedName || "Medication"}` : 'On track for today';
                             if (totalDoses === 0) statusDesc = 'No medicines scheduled';
 
                             return (
-                                <TouchableOpacity
+                                <Animated.TouchableOpacity
+                                    entering={FadeInRight.delay(idx * 150)}
+                                    layout={Layout.springify()}
                                     key={p.id}
                                     style={[styles.patientCard, isAlert && styles.patientCardAlert]}
                                     activeOpacity={0.8}
@@ -143,7 +146,7 @@ export default function CaregiverDashboard() {
 
                                         </View>
                                     </View>
-                                </TouchableOpacity>
+                                </Animated.TouchableOpacity>
                             );
                         })
                     )}

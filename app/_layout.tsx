@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from '../libs/store';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Alert } from 'react-native';
+import * as Notifications from 'expo-notifications';
 
 function useProtectedRoute() {
     const { user, profile, initialized } = useAuthStore();
@@ -36,6 +37,24 @@ export default function RootLayout() {
     const { initialized } = useAuthStore();
 
     useProtectedRoute();
+
+    useEffect(() => {
+        // Listener for foreground notifications
+        const subscription = Notifications.addNotificationReceivedListener(notification => {
+            const { title, body } = notification.request.content;
+            const data = notification.request.content.data;
+
+            if (data?.type === 'sos') {
+                Alert.alert(`🚨 ${title || 'SOS Alert'}`, body || 'A patient needs assistance.', [
+                    { text: 'View Patient', onPress: () => { } }
+                ]);
+            } else if (data?.type === 'missed_dose') {
+                Alert.alert(`⚠️ ${title || 'Missed Dose'}`, body || 'A medication dose was missed.');
+            }
+        });
+
+        return () => subscription.remove();
+    }, []);
 
     if (!initialized) {
         return (

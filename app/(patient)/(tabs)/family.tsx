@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     inviteTitle: { color: '#0f172a', fontSize: 18, fontWeight: '700', marginBottom: 8 },
     inviteDesc: { color: 'rgba(15, 23, 42, 0.8)', fontSize: 14, marginBottom: 24, lineHeight: 22 },
     codeBox: { backgroundColor: '#fff', paddingVertical: 16, borderRadius: 16, alignItems: 'center' },
-    codeText: { fontSize: 36, fontWeight: '800', color: '#0f172a', letterSpacing: 12 },
+    codeText: { fontSize: 32, fontWeight: '800', color: '#0f172a', letterSpacing: 8 },
 
     section: { marginBottom: 32 },
     sectionTitle: { fontSize: 18, fontWeight: '700', color: '#0f172a', marginBottom: 16 },
@@ -213,11 +213,11 @@ const styles = StyleSheet.create({
     modalContent: { flex: 1, paddingHorizontal: 24, justifyContent: 'center', paddingBottom: 40 },
     profileSection: { alignItems: 'center', marginBottom: 32 },
     avatarWrapper: { position: 'relative', marginBottom: 24 },
-    avatar: { width: 192, height: 192, borderRadius: 96, borderWidth: 4, borderColor: '#19e66f' },
+    avatar: { width: 128, height: 128, borderRadius: 64, borderWidth: 4, borderColor: '#19e66f' },
     avatarBadge: { position: 'absolute', bottom: 8, right: 8, backgroundColor: '#19e66f', padding: 8, borderRadius: 999, borderWidth: 4, borderColor: '#fff' },
     profileInfo: { alignItems: 'center' },
     nameRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
-    profileName: { fontSize: 32, fontWeight: '700', color: '#0f172a' },
+    profileName: { fontSize: 24, fontWeight: '700', color: '#0f172a' },
     roleTag: { backgroundColor: 'rgba(25, 230, 111, 0.2)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999 },
     roleTagText: { color: '#047857', fontWeight: '700', fontSize: 14 },
     profileDesc: { fontSize: 18, color: '#64748b', textAlign: 'center', lineHeight: 28, paddingHorizontal: 16 },
@@ -235,5 +235,5 @@ const styles = StyleSheet.create({
     footerNoteText: { fontSize: 12, fontWeight: '600', color: '#94a3b8' },
     footerNoteSub: { fontSize: 12, color: '#94a3b8', textAlign: 'center', marginBottom: 16 },
 
-    homeIndicator: { width: 128, height: 6, backgroundColor: '#e2e8f0', borderRadius: 3, alignSelf: 'center' }
+    homeIndicator: { width: 80, height: 6, backgroundColor: '#e2e8f0', borderRadius: 3, alignSelf: 'center' }
 });

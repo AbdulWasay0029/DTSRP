@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "medicine_app",
+    "name": "HealthSync",
     "slug": "medicine_app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.stitch.medicineapp",
+      "package": "com.healthsync.app",
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -45,6 +46,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5d651add-f8ae-4dc4-be67-9af99fcc483c"
+      }
     }
   }
 }

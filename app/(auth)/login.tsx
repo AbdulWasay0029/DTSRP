@@ -82,26 +82,7 @@ export default function Login() {
                         loading={loading}
                     />
 
-                    <View style={styles.dividerContainer}>
-                        <View style={styles.dividerLine} />
-                        <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
-                        <View style={styles.dividerLine} />
-                    </View>
 
-                    <TouchableOpacity
-                        style={styles.googleBtn}
-                        onPress={async () => {
-                            try {
-                                const mockEmail = `caregiver_${Date.now()}@google.mock`;
-                                await login(mockEmail, 'googlemockpass');
-                            } catch (e: any) {
-                                Alert.alert('Google Sign-In Error', "Cannot find simulated account. Please register first.");
-                            }
-                        }}
-                        disabled={loading}
-                    >
-                        <Text style={styles.googleBtnText}>Continue with Google</Text>
-                    </TouchableOpacity>
 
                     <Text style={styles.switchText}>
                         Don&apos;t have an account?{' '}
@@ -201,38 +182,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 32,
     },
-    dividerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 24,
-    },
-    dividerLine: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#e2e8f0',
-    },
-    dividerText: {
-        marginHorizontal: 16,
-        color: '#94a3b8',
-        fontSize: 12,
-        fontWeight: '600',
-        letterSpacing: 1,
-    },
-    googleBtn: {
-        width: '100%',
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        paddingVertical: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    googleBtnText: {
-        color: '#334155',
-        fontWeight: '600',
-        fontSize: 16,
-    },
+
     switchText: {
         textAlign: 'center',
         marginTop: 24,

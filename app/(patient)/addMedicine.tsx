@@ -403,12 +403,13 @@ const styles = StyleSheet.create({
     dosageUnit: { fontSize: 18, fontWeight: '600', color: '#94a3b8', marginLeft: 6, marginTop: 8 },
 
     typeGrid: {
-        flexDirection: 'row', gap: 12, backgroundColor: '#fff', padding: 12, borderRadius: 24,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2
+        flexDirection: 'row', gap: 8, backgroundColor: '#fff', padding: 8, borderRadius: 24,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2,
+        flexWrap: 'wrap', justifyContent: 'center'
     },
-    typeBtn: { flex: 1, alignItems: 'center', paddingVertical: 20, borderRadius: 20, backgroundColor: '#f8fafc', gap: 12, borderWidth: 2, borderColor: 'transparent' },
+    typeBtn: { flex: 1, minWidth: 100, alignItems: 'center', paddingVertical: 16, borderRadius: 20, backgroundColor: '#f8fafc', gap: 8, borderWidth: 2, borderColor: 'transparent' },
     typeBtnActive: { backgroundColor: 'rgba(25, 230, 111, 0.1)', borderColor: '#19e66f' },
-    typeText: { fontSize: 14, fontWeight: '600', color: '#64748b' },
+    typeText: { fontSize: 13, fontWeight: '600', color: '#64748b' },
     typeTextActive: { color: '#0f172a' },
 
     freqRow: {
@@ -432,15 +433,15 @@ const styles = StyleSheet.create({
     timeText: { fontSize: 24, fontWeight: '700', color: '#0f172a' },
     timeAmPm: { fontSize: 16, fontWeight: '500', color: '#64748b' },
 
-    datesRow: { flexDirection: 'row', gap: 16, marginBottom: 24 },
+    datesRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
     dateBox: { flex: 1 },
     dateInput: {
-        backgroundColor: '#fff', borderRadius: 20, padding: 16,
+        backgroundColor: '#fff', borderRadius: 20, padding: 12,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2,
-        height: 64
+        height: 60
     },
-    dateText: { fontSize: 16, fontWeight: '600', color: '#0f172a' },
+    dateText: { fontSize: 14, fontWeight: '600', color: '#0f172a' },
 
     reminderCard: {
         backgroundColor: '#fff', borderRadius: 24, padding: 20,

@@ -11,7 +11,7 @@ export default function AddPatientScreen() {
     const [loading, setLoading] = useState(false);
 
     // Refs for input focus management
-    const inputRefs = useRef<Array<TextInput | null>>([]);
+    const inputRefs = useRef<(TextInput | null)[]>([]);
 
     const handleCodeChange = (text: string, index: number) => {
         const newCode = [...code];

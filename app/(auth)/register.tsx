@@ -46,8 +46,29 @@ export default function Register() {
                     <Text style={styles.subtitle}>Start managing medications and monitoring your family&apos;s health today.</Text>
                 </View>
 
+                <View style={styles.form}>
+                    <Input
+                        label="Full Name"
+                        placeholder="e.g. John Doe"
+                        onChangeText={setName}
+                    />
+                    <Input
+                        label="Email or Phone"
+                        placeholder="name@example.com"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        onChangeText={setEmail}
+                    />
+                    <Input
+                        label="Password"
+                        placeholder="••••••••"
+                        secureTextEntry
+                        onChangeText={setPassword}
+                    />
+                </View>
+
                 <View style={styles.roleSection}>
-                    <Text style={styles.roleLabel}>Select your role</Text>
+                    <Text style={styles.roleLabel}>Select your account type</Text>
                     <View style={styles.roleGrid}>
 
                         <TouchableOpacity
@@ -91,54 +112,13 @@ export default function Register() {
                     </View>
                 </View>
 
-                {role === 'patient' ? (
-                    <View style={styles.form}>
-                        <Input
-                            label="Full Name"
-                            placeholder="e.g. John Doe"
-                            onChangeText={setName}
-                        />
-                        <Input
-                            label="Email or Phone"
-                            placeholder="name@example.com"
-                            autoCapitalize="none"
-                            keyboardType="email-address"
-                            onChangeText={setEmail}
-                        />
-                        <Input
-                            label="Password"
-                            placeholder="••••••••"
-                            secureTextEntry
-                            onChangeText={setPassword}
-                        />
-                    </View>
-                ) : null}
-
                 <View style={styles.footer}>
-                    {role === 'patient' ? (
-                        <Button
-                            title="Create Account"
-                            onPress={handleRegister}
-                            loading={loading}
-                            icon={<ArrowRight size={20} color="#0f172a" />}
-                        />
-                    ) : (
-                        <TouchableOpacity
-                            style={styles.googleBtn}
-                            onPress={async () => {
-                                // MOCK GOOGLE AUTH FOR MVP CAREGIVER
-                                try {
-                                    const mockEmail = `caregiver_${Date.now()}@google.mock`;
-                                    await register(mockEmail, 'googlemockpass', 'Google Caregiver', 'caregiver');
-                                } catch (e: any) {
-                                    Alert.alert('Google Sign-In Error', e.message);
-                                }
-                            }}
-                            disabled={loading}
-                        >
-                            <Text style={styles.googleBtnText}>Continue with Google</Text>
-                        </TouchableOpacity>
-                    )}
+                    <Button
+                        title="Create Account"
+                        onPress={handleRegister}
+                        loading={loading}
+                        icon={<ArrowRight size={20} color="#0f172a" />}
+                    />
 
                     <Text style={styles.switchText}>
                         Already have an account?{' '}
@@ -195,15 +175,7 @@ const styles = StyleSheet.create({
     roleCardTitle: { fontSize: 14, fontWeight: '700', color: '#0f172a' },
     roleCardDesc: { fontSize: 10, color: '#64748b', marginTop: 4, textAlign: 'center' },
     roleCheck: { marginTop: 12 },
-
     footer: { marginTop: 'auto', paddingHorizontal: 24, paddingTop: 16 },
-    googleBtn: {
-        width: '100%', backgroundColor: '#fff', borderWidth: 1, borderColor: '#e2e8f0',
-        paddingVertical: 16, borderRadius: 12, alignItems: 'center', justifyContent: 'center',
-    },
-    googleBtnText: {
-        color: '#0f172a', fontWeight: '600', fontSize: 16,
-    },
     switchText: { textAlign: 'center', marginTop: 24, color: '#64748b', fontSize: 14 },
     switchLink: { color: '#19e66f', fontWeight: '600', textDecorationLine: 'underline' }
 });

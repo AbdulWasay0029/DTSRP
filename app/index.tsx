@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated , ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator } from 'react-native';
+
 import { Heart, Pill } from 'lucide-react-native';
 import { useAuthStore } from '../libs/store';
 
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         position: 'relative',
-        width: 128,
-        height: 128,
+        width: 100,
+        height: 100,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 32,
@@ -121,10 +121,10 @@ const styles = StyleSheet.create({
         transform: [{ scale: 1.5 }],
     },
     iconBox: {
-        width: 112,
-        height: 112,
+        width: 80,
+        height: 80,
         backgroundColor: '#fff',
-        borderRadius: 24,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: 'rgba(25, 230, 111, 0.15)',
@@ -146,21 +146,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 36,
+        fontSize: 32,
         fontWeight: '700',
         color: '#0f172a',
         letterSpacing: -0.5,
-        marginBottom: 12,
+        marginBottom: 8,
     },
     titlePrimary: {
         color: '#19e66f',
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 18,
         color: '#64748b',
         textAlign: 'center',
         fontWeight: '500',
-        lineHeight: 28,
+        lineHeight: 26,
     },
     progressSection: {
         width: '100%',

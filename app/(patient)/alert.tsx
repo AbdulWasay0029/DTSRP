@@ -96,9 +96,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16, paddingVertical: 6, borderRadius: 9999, marginBottom: 16
     },
     statusText: { color: '#19e66f', fontSize: 14, fontWeight: '700', letterSpacing: 1 },
-    title: { fontSize: 36, fontWeight: '700', color: '#0f172a', textAlign: 'center', lineHeight: 44, marginTop: 16 },
+    title: { fontSize: 28, fontWeight: '700', color: '#0f172a', textAlign: 'center', lineHeight: 36, marginTop: 16 },
 
-    mainContent: { flex: 1, paddingHorizontal: 24, justifyContent: 'center', paddingBottom: 32 },
+    mainContent: { flex: 1, paddingHorizontal: 20, justifyContent: 'center', paddingBottom: 32 },
     card: {
         backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden',
         borderWidth: 1, borderColor: '#f1f5f9',
@@ -106,26 +106,26 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     imageHeader: {
-        width: '100%', height: 192, backgroundColor: 'rgba(25, 230, 111, 0.05)',
+        width: '100%', height: 160, backgroundColor: 'rgba(25, 230, 111, 0.05)',
         alignItems: 'center', justifyContent: 'center',
         position: 'relative'
     },
     iconCircle: {
-        width: 128, height: 128, borderRadius: 64, backgroundColor: '#fff',
+        width: 100, height: 100, borderRadius: 50, backgroundColor: '#fff',
         alignItems: 'center', justifyContent: 'center',
         borderWidth: 4, borderColor: 'rgba(25, 230, 111, 0.2)',
         shadowColor: '#fff', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 1, shadowRadius: 16, elevation: 4
     },
-    cardBody: { padding: 32, alignItems: 'center' },
-    medName: { fontSize: 30, fontWeight: '700', color: '#0f172a', marginBottom: 8 },
-    medDosage: { fontSize: 20, fontWeight: '500', color: '#64748b' },
+    cardBody: { padding: 24, alignItems: 'center' },
+    medName: { fontSize: 24, fontWeight: '700', color: '#0f172a', marginBottom: 8, textAlign: 'center' },
+    medDosage: { fontSize: 18, fontWeight: '500', color: '#64748b' },
     infoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24 },
     infoText: { fontSize: 14, color: '#94a3b8' },
 
-    footer: { paddingHorizontal: 24, paddingBottom: 48, gap: 16, width: '100%' },
+    footer: { paddingHorizontal: 20, paddingBottom: 32, gap: 12, width: '100%' },
     takenBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
-        backgroundColor: '#19e66f', width: '100%', height: 72, borderRadius: 12,
+        backgroundColor: '#19e66f', width: '100%', height: 60, borderRadius: 12,
         shadowColor: 'rgba(25, 230, 111, 0.2)', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 1, shadowRadius: 16, elevation: 8
     },
     takenText: { fontSize: 20, fontWeight: '700', color: '#0f172a', letterSpacing: 0.5 },

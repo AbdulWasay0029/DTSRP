@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { db } from './firebase';
-import { collection, doc, updateDoc, query, where, getDocs, onSnapshot, addDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, query, where, getDocs, onSnapshot, addDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useAuthStore } from './store';
 import { scheduleMedicineNotifications, cancelMedicineNotifications, syncAllNotifications } from './notifications';
 
@@ -127,6 +127,41 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
                                     expectedTime: t
                                 });
                                 hasMissed = true;
+
+                                // Notify Caregivers!
+                                (async () => {
+                                    try {
+                                        const qConn = query(collection(db, 'Connections'), where('patientId', '==', user.uid), where('status', '==', 'approved'));
+                                        const connSnap = await getDocs(qConn);
+                                        const caregiverIds = connSnap.docs.map(d => d.data().caregiverId);
+
+                                        if (caregiverIds.length > 0) {
+                                            const qUsers = query(collection(db, 'Users'), where('__name__', 'in', caregiverIds));
+                                            const usersSnap = await getDocs(qUsers);
+                                            const pushTokens: string[] = [];
+                                            usersSnap.forEach(u => {
+                                                const d = u.data();
+                                                if (d.expoPushToken) pushTokens.push(d.expoPushToken);
+                                            });
+
+                                            if (pushTokens.length > 0) {
+                                                fetch('https://exp.host/--/api/v2/push/send', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify(pushTokens.map(token => ({
+                                                        to: token,
+                                                        sound: 'default',
+                                                        title: '⚠️ Missed Dose Alert',
+                                                        body: `${useAuthStore.getState().profile?.name || 'Your patient'} missed their ${med.name} dose scheduled for ${t}.`,
+                                                        data: { type: 'missed_dose', patientId: user.uid },
+                                                    }))),
+                                                }).catch(() => { });
+                                            }
+                                        }
+                                    } catch (err) {
+                                        console.error('[MissedDose] Failed to notify caregivers:', err);
+                                    }
+                                })();
                             }
                         } catch { }
                     }
@@ -227,12 +262,47 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
                                         });
                                         hasMissed = true;
 
-                                        // Simulated push notification for the caregiver
+                                        // Real push notification for all caregivers of this patient
+                                        (async () => {
+                                            try {
+                                                const qConn = query(collection(db, 'Connections'), where('patientId', '==', med.patientId), where('status', '==', 'approved'));
+                                                const connSnap = await getDocs(qConn);
+                                                const caregiverIds = connSnap.docs.map(d => d.data().caregiverId);
+
+                                                if (caregiverIds.length > 0) {
+                                                    const qUsers = query(collection(db, 'Users'), where('__name__', 'in', caregiverIds));
+                                                    const usersSnap = await getDocs(qUsers);
+                                                    const pushTokens: string[] = [];
+                                                    usersSnap.forEach(u => {
+                                                        const d = u.data();
+                                                        if (d.expoPushToken) pushTokens.push(d.expoPushToken);
+                                                    });
+
+                                                    if (pushTokens.length > 0) {
+                                                        fetch('https://exp.host/--/api/v2/push/send', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify(pushTokens.map(token => ({
+                                                                to: token,
+                                                                sound: 'default',
+                                                                title: '⚠️ Missed Dose Alert',
+                                                                body: `${ps.find(p => p.id === med.patientId)?.name || 'Your patient'} missed their ${med.name} dose scheduled for ${t}.`,
+                                                                data: { type: 'missed_dose', patientId: med.patientId },
+                                                            }))),
+                                                        }).catch(() => { });
+                                                    }
+                                                }
+                                            } catch (err) {
+                                                console.error('[MissedDose] Failed to notify caregivers:', err);
+                                            }
+                                        })();
+
+                                        // Keep local alert for app-usage feedback
                                         import('react-native').then(({ Alert }) => {
-                                            const patient = ps.find(p => p.id === med.patientId);
+                                            const pName = ps.find(p => p.id === med.patientId)?.name || 'Your patient';
                                             Alert.alert(
                                                 "⚠️ Missed Dose Alert",
-                                                `${patient?.name || 'Your patient'} missed their ${med.name} dose scheduled for ${t}.`
+                                                `${pName} missed their ${med.name} dose scheduled for ${t}.`
                                             );
                                         });
                                     }
@@ -250,7 +320,15 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
     },
 
     addMedicine: async (med) => {
-        const notifIds = await scheduleMedicineNotifications(med as Medicine);
+        let notifIds: string[] = [];
+        try {
+            notifIds = await scheduleMedicineNotifications(med as Medicine);
+        } catch (e: any) {
+            console.warn('Failed to schedule local notification:', e);
+            import('react-native').then(({ Alert }) => {
+                Alert.alert("Notification Warning", "Medicine was saved, but we couldn't schedule a local notification. Please check app permissions.");
+            });
+        }
         const finalMed = { ...med, notificationIds: notifIds };
         await addDoc(collection(db, 'Medicines'), finalMed);
     },
@@ -310,7 +388,8 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
             const patientId = qs.docs[0].id;
             const user = useAuthStore.getState().user;
             if (user) {
-                await addDoc(collection(db, 'Connections'), {
+                const connectionId = `${user.uid}_${patientId}`;
+                await setDoc(doc(db, 'Connections', connectionId), {
                     patientId,
                     caregiverId: user.uid,
                     status: 'pending'

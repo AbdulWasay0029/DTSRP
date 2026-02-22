@@ -1,9 +1,50 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Filter, Clock, Pill } from 'lucide-react-native';
+import { useMedicineStore } from '../../../libs/medicineStore';
 
 export default function CaregiverScheduleScreen() {
+    const { patients, medicines, logs } = useMedicineStore();
+
+    const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+    const timelineBlocks = useMemo(() => {
+        const doses: { time: string, timeMs: number, items: any[] }[] = [];
+        const timeMap = new Map<string, any[]>();
+
+        patients.forEach(p => {
+            const pMeds = medicines.filter(m => m.patientId === p.id);
+            pMeds.forEach(m => {
+                m.times.forEach(t => {
+                    const log = logs.find(l => l.medicineId === m.id && l.date.startsWith(todayStr) && (l.expectedTime === t || !l.expectedTime));
+                    if (!timeMap.has(t)) timeMap.set(t, []);
+                    timeMap.get(t)!.push({
+                        id: `${p.id}-${m.id}-${t}`,
+                        patient: p,
+                        medicine: m,
+                        status: log?.status || 'pending'
+                    });
+                });
+            });
+        });
+
+        timeMap.forEach((items, timeStr) => {
+            try {
+                const [time, period] = timeStr.trim().split(' ');
+                let [hours, minutes] = time.split(':').map(Number);
+                if (period === 'PM' && hours !== 12) hours += 12;
+                if (period === 'AM' && hours === 12) hours = 0;
+                const now = new Date();
+                now.setHours(hours, minutes, 0, 0);
+                doses.push({ time: timeStr, timeMs: now.getTime(), items });
+            } catch { }
+        });
+
+        doses.sort((a, b) => a.timeMs - b.timeMs);
+        return doses;
+    }, [patients, medicines, logs, todayStr]);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -17,79 +58,72 @@ export default function CaregiverScheduleScreen() {
             </View>
 
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+                {timelineBlocks.length === 0 ? (
+                    <Text style={{ textAlign: 'center', color: '#64748b', marginTop: 40 }}>No medicines scheduled for your patients today.</Text>
+                ) : (
+                    <View style={styles.timeline}>
+                        <View style={styles.timelineLine} />
 
-                {/* Timeline Container */}
-                <View style={styles.timeline}>
-                    <View style={styles.timelineLine} />
+                        {timelineBlocks.map((block, i) => {
+                            const isPast = block.timeMs < Date.now();
+                            const isNext = !isPast && (i === 0 || timelineBlocks[i - 1]?.timeMs < Date.now());
 
-                    {/* Morning Block */}
-                    <View style={styles.timeBlock}>
-                        <View style={styles.timeHeader}>
-                            <View style={styles.timeDot} />
-                            <Text style={styles.timeText}>08:00 AM</Text>
-                        </View>
+                            return (
+                                <View key={block.time} style={styles.timeBlock}>
+                                    <View style={styles.timeHeader}>
+                                        <View style={[styles.timeDot, isNext && { backgroundColor: '#fcfaf8', borderColor: '#f59e0b' }]} />
+                                        <Text style={[styles.timeText, isNext && { color: '#f59e0b' }]}>
+                                            {block.time} {isNext ? '(Upcoming)' : ''}
+                                        </Text>
+                                    </View>
 
-                        <View style={styles.card}>
-                            <View style={styles.cardHeader}>
-                                <View style={styles.patientInfo}>
-                                    <Image source={{ uri: 'https://ui-avatars.com/api/?name=Martha+Stewart&background=0f172a&color=fff' }} style={styles.avatar} />
-                                    <Text style={styles.patientName}>Martha Stewart</Text>
+                                    {block.items.map((item, j) => {
+                                        const isTaken = item.status === 'taken';
+                                        const isMissed = item.status === 'missed';
+                                        const isActive = isNext || (!isTaken && !isMissed && !isPast);
+
+                                        return (
+                                            <View key={item.id} style={[
+                                                styles.card,
+                                                isActive && { borderColor: '#fef3c7', backgroundColor: '#fdfbf7' },
+                                                j > 0 && { marginTop: 12 }
+                                            ]}>
+                                                <View style={styles.cardHeader}>
+                                                    <View style={styles.patientInfo}>
+                                                        <Image source={{ uri: `https://ui-avatars.com/api/?name=${item.patient.name}&background=0f172a&color=fff` }} style={styles.avatar} />
+                                                        <Text style={styles.patientName}>{item.patient.name}</Text>
+                                                    </View>
+                                                    {isTaken && (
+                                                        <View style={[styles.statusBadge, { backgroundColor: '#e8fdf1' }]}>
+                                                            <Text style={[styles.statusText, { color: '#19e66f' }]}>Taken</Text>
+                                                        </View>
+                                                    )}
+                                                    {isMissed && (
+                                                        <View style={[styles.statusBadge, { backgroundColor: '#fee2e2' }]}>
+                                                            <Text style={[styles.statusText, { color: '#ef4444' }]}>Missed</Text>
+                                                        </View>
+                                                    )}
+                                                </View>
+                                                <View style={styles.medicationRow}>
+                                                    <View style={[
+                                                        styles.medIconBox,
+                                                        isActive && { backgroundColor: '#fef3c7' }
+                                                    ]}>
+                                                        <Pill size={16} color={isActive ? "#f59e0b" : "#64748b"} />
+                                                    </View>
+                                                    <View style={styles.medDetails}>
+                                                        <Text style={styles.medName}>{item.medicine.name}</Text>
+                                                        <Text style={styles.medDosage}>{item.medicine.dosage} • {item.medicine.mealRelation}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
                                 </View>
-                                <View style={[styles.statusBadge, { backgroundColor: '#e8fdf1' }]}>
-                                    <Text style={[styles.statusText, { color: '#19e66f' }]}>Taken</Text>
-                                </View>
-                            </View>
-                            <View style={styles.medicationRow}>
-                                <View style={styles.medIconBox}><Pill size={16} color="#64748b" /></View>
-                                <View style={styles.medDetails}>
-                                    <Text style={styles.medName}>Atorvastatin</Text>
-                                    <Text style={styles.medDosage}>20mg • After Food</Text>
-                                </View>
-                            </View>
-                        </View>
+                            );
+                        })}
                     </View>
-
-                    {/* Afternoon Block */}
-                    <View style={styles.timeBlock}>
-                        <View style={styles.timeHeader}>
-                            <View style={[styles.timeDot, { backgroundColor: '#fcfaf8', borderColor: '#f59e0b' }]} />
-                            <Text style={[styles.timeText, { color: '#f59e0b' }]}>01:00 PM (Upcoming)</Text>
-                        </View>
-
-                        <View style={[styles.card, { borderColor: '#fef3c7', backgroundColor: '#fdfbf7' }]}>
-                            <View style={styles.cardHeader}>
-                                <View style={styles.patientInfo}>
-                                    <Image source={{ uri: 'https://ui-avatars.com/api/?name=Robert+Brown&background=0f172a&color=fff' }} style={styles.avatar} />
-                                    <Text style={styles.patientName}>Robert Brown</Text>
-                                </View>
-                            </View>
-                            <View style={styles.medicationRow}>
-                                <View style={[styles.medIconBox, { backgroundColor: '#fef3c7' }]}><Pill size={16} color="#f59e0b" /></View>
-                                <View style={styles.medDetails}>
-                                    <Text style={styles.medName}>Metformin</Text>
-                                    <Text style={styles.medDosage}>500mg • With Food</Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={[styles.card, { borderColor: '#fef3c7', backgroundColor: '#fdfbf7', marginTop: 12 }]}>
-                            <View style={styles.cardHeader}>
-                                <View style={styles.patientInfo}>
-                                    <Image source={{ uri: 'https://ui-avatars.com/api/?name=Martha+Stewart&background=0f172a&color=fff' }} style={styles.avatar} />
-                                    <Text style={styles.patientName}>Martha Stewart</Text>
-                                </View>
-                            </View>
-                            <View style={styles.medicationRow}>
-                                <View style={[styles.medIconBox, { backgroundColor: '#fef3c7' }]}><Pill size={16} color="#f59e0b" /></View>
-                                <View style={styles.medDetails}>
-                                    <Text style={styles.medName}>Lisinopril</Text>
-                                    <Text style={styles.medDosage}>10mg • Before Food</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-
-                </View>
+                )}
             </ScrollView>
         </SafeAreaView>
     );

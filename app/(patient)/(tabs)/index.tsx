@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pill, CheckCircle2, Circle, PhoneCall, AlertCircle, Activity, ChevronRight } from 'lucide-react-native';
+import Animated, { FadeInUp, FadeInDown, Layout } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { useAuthStore } from '../../../libs/store';
@@ -171,7 +172,11 @@ export default function PatientDashboard() {
 
                 {/* Hero Card: Next Dose */}
                 {nextDose ? (
-                    <View style={styles.heroWrapper}>
+                    <Animated.View
+                        entering={FadeInUp.delay(200).duration(800)}
+                        layout={Layout.springify()}
+                        style={styles.heroWrapper}
+                    >
                         <View style={styles.heroCard}>
                             <View style={styles.heroContent}>
                                 <View style={styles.heroHeader}>
@@ -208,7 +213,7 @@ export default function PatientDashboard() {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    </View>
+                    </Animated.View>
                 ) : (
                     <View style={[styles.heroWrapper, { paddingHorizontal: 24, marginBottom: 32 }]}>
                         <View style={[styles.heroCard, { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }]}>
@@ -226,7 +231,7 @@ export default function PatientDashboard() {
                 {/* Today's Schedule */}
                 <View style={styles.scheduleSection}>
                     <View style={styles.scheduleHeaderRow}>
-                        <Text style={styles.sectionTitle}>Today's Schedule</Text>
+                        <Text style={styles.sectionTitle}>Today&apos;s Schedule</Text>
                         <TouchableOpacity onPress={() => router.push('/(patient)/plan' as any)}>
                             <Text style={styles.viewAllText}>View All</Text>
                         </TouchableOpacity>
@@ -236,8 +241,12 @@ export default function PatientDashboard() {
                         {todayDoses.length === 0 ? (
                             <Text style={styles.emptyText}>No medicines to show.</Text>
                         ) : (
-                            todayDoses.map((dose) => (
-                                <View key={dose.id} style={[styles.medCard, dose.isTaken && styles.medCardTaken]}>
+                            todayDoses.map((dose, idx) => (
+                                <Animated.View
+                                    entering={FadeInDown.delay(400 + (idx * 100))}
+                                    key={dose.id}
+                                    style={[styles.medCard, dose.isTaken && styles.medCardTaken]}
+                                >
                                     <View style={[styles.medIconBox, dose.isTaken && { backgroundColor: '#f1f5f9' }]}>
                                         <Pill color={dose.isTaken ? "#94a3b8" : "#3b82f6"} size={24} />
                                     </View>
@@ -252,7 +261,7 @@ export default function PatientDashboard() {
                                             <Circle color="#cbd5e1" size={28} />
                                         )}
                                     </View>
-                                </View>
+                                </Animated.View>
                             ))
                         )}
                     </View>
@@ -286,16 +295,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
         paddingHorizontal: 24, marginBottom: 24,
     },
-    greeting: { fontSize: 28, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
-    dateText: { fontSize: 16, fontWeight: '500', color: '#64748b', marginTop: 4 },
+    greeting: { fontSize: 24, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
+    dateText: { fontSize: 14, fontWeight: '500', color: '#64748b', marginTop: 4 },
     progressCircle: {
-        width: 64, height: 64, borderRadius: 32,
+        width: 56, height: 56, borderRadius: 28,
         backgroundColor: '#fff',
         borderWidth: 4, borderColor: 'rgba(25, 230, 111, 0.2)',
         alignItems: 'center', justifyContent: 'center',
         shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
     },
-    progressText: { fontSize: 18, fontWeight: '700', color: '#19e66f' },
+    progressText: { fontSize: 16, fontWeight: '700', color: '#19e66f' },
 
     adherenceWrapper: { paddingHorizontal: 24, marginBottom: 24 },
     adherenceCard: {
@@ -324,11 +333,11 @@ const styles = StyleSheet.create({
         borderRadius: 9999, marginBottom: 8, alignSelf: 'flex-start'
     },
     nextDoseTagText: { fontSize: 10, fontWeight: '700', color: '#ea580c', letterSpacing: 1, textTransform: 'uppercase' },
-    heroTitle: { fontSize: 24, fontWeight: '700', color: '#0f172a' },
-    heroSubtitle: { fontSize: 16, color: '#64748b', marginTop: 4 },
+    heroTitle: { fontSize: 22, fontWeight: '700', color: '#0f172a' },
+    heroSubtitle: { fontSize: 15, color: '#64748b', marginTop: 4 },
     remindsInBox: { backgroundColor: '#f8fafc', padding: 12, borderRadius: 12, alignItems: 'center', minWidth: 80, marginLeft: 12 },
     remindsInLabel: { fontSize: 10, fontWeight: '700', color: '#94a3b8', letterSpacing: 1, textTransform: 'uppercase' },
-    remindsInValue: { fontSize: 22, fontWeight: '700', color: '#0f172a', marginTop: 2 },
+    remindsInValue: { fontSize: 20, fontWeight: '700', color: '#0f172a', marginTop: 2 },
 
     timerRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
     timerBoxActive: {
@@ -341,16 +350,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#f6f8f7', paddingVertical: 16,
         borderRadius: 12, borderWidth: 2, borderColor: 'rgba(25, 230, 111, 0.1)',
     },
-    timerBigText: { fontSize: 32, fontWeight: '700', color: '#0f172a' },
-    timerSmallText: { fontSize: 12, fontWeight: '600', color: '#64748b', letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' },
+    timerBigText: { fontSize: 28, fontWeight: '700', color: '#0f172a' },
+    timerSmallText: { fontSize: 10, fontWeight: '600', color: '#64748b', letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' },
 
     markBtn: {
         backgroundColor: '#19e66f',
-        paddingVertical: 20, borderRadius: 16,
+        paddingVertical: 16, borderRadius: 16,
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
         shadowColor: 'rgba(25, 230, 111, 0.3)', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 1, shadowRadius: 8, elevation: 4,
     },
-    markBtnText: { fontSize: 20, fontWeight: '700', color: '#0f172a' },
+    markBtnText: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
 
     scheduleSection: { paddingHorizontal: 24 },
     scheduleHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
@@ -359,7 +368,7 @@ const styles = StyleSheet.create({
     scheduleList: { gap: 12 },
     medCard: {
         flexDirection: 'row', alignItems: 'center',
-        backgroundColor: '#fff', padding: 16,
+        backgroundColor: '#fff', padding: 12,
         borderRadius: 16, borderWidth: 1, borderColor: '#f1f5f9',
         borderLeftWidth: 4, borderLeftColor: '#3b82f6',
     },
@@ -383,9 +392,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 24,
         right: 24,
-        width: 64,
-        height: 64,
-        borderRadius: 32,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
         backgroundColor: '#dc2626', // emergency-red
         justifyContent: 'center',
         alignItems: 'center',
@@ -394,7 +403,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
         shadowRadius: 16,
         elevation: 8,
-        borderWidth: 4,
+        borderWidth: 3,
         borderColor: '#ffffff',
     }
 });

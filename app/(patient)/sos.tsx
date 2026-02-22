@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MapPin, PhoneCall, CheckCircle, Pointer } from 'lucide-react-native';
 import { useAuthStore } from '../../libs/store';
+import { db } from '../../libs/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function SOSScreen() {
     const router = useRouter();
@@ -41,12 +43,54 @@ export default function SOSScreen() {
         }
     }, [alertTriggered]);
 
-    const triggerEmergency = () => {
-        Alert.alert(
-            "Emergency Alert Sent!",
-            "Your caregiver and emergency contacts have been notified with your current location.",
-            [{ text: "OK" }]
-        );
+    const triggerEmergency = async () => {
+        try {
+            // Find all connected caregivers
+            const qConn = query(collection(db, 'Connections'), where('patientId', '==', profile?.id), where('status', '==', 'approved'));
+            const connSnap = await getDocs(qConn);
+            const caregiverIds = connSnap.docs.map(d => d.data().caregiverId);
+
+            if (caregiverIds.length > 0) {
+                // Get their push tokens
+                const qUsers = query(collection(db, 'Users'), where('__name__', 'in', caregiverIds));
+                const usersSnap = await getDocs(qUsers);
+
+                const pushTokens: string[] = [];
+                usersSnap.forEach(u => {
+                    const data = u.data();
+                    if (data.expoPushToken) pushTokens.push(data.expoPushToken);
+                });
+
+                // Send push notifications
+                if (pushTokens.length > 0) {
+                    await fetch('https://exp.host/--/api/v2/push/send', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Accept-encoding': 'gzip, deflate',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(pushTokens.map(token => ({
+                            to: token,
+                            sound: 'default',
+                            title: '🚨 EMERGENCY ALERT',
+                            body: `${profile?.name} has triggered an SOS alert!`,
+                            data: { type: 'sos', patientId: profile?.id },
+                            priority: 'high'
+                        }))),
+                    });
+                }
+            }
+
+            Alert.alert(
+                "Emergency Alert Sent!",
+                "Your caregiver and emergency contacts have been notified.",
+                [{ text: "OK" }]
+            );
+        } catch (error) {
+            console.error("Failed to send SOS push notification:", error);
+            Alert.alert("SOS Triggered", "We tried to notify your caregiver, but encountered an error. Please call them directly.");
+        }
     };
 
     const handleCancel = () => {
@@ -139,8 +183,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16, paddingVertical: 8, borderRadius: 9999, marginBottom: 12
     },
     locationText: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
-    title: { fontSize: 36, fontWeight: '800', color: '#ffffff', textAlign: 'center', letterSpacing: -1 },
-    subtitle: { fontSize: 18, color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center', marginTop: 12, fontWeight: '500', maxWidth: 300 },
+    title: { fontSize: 28, fontWeight: '800', color: '#ffffff', textAlign: 'center', letterSpacing: -1 },
+    subtitle: { fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center', marginTop: 12, fontWeight: '500', maxWidth: 300 },
 
     mainContent: { flex: 1, alignItems: 'center', justifyContent: 'center', marginVertical: 40 },
 
@@ -154,24 +198,24 @@ const styles = StyleSheet.create({
     progressBarFill: { height: '100%', backgroundColor: '#19e66f', borderRadius: 9999 },
 
     // SOS Button
-    sosButtonContainer: { position: 'relative', alignItems: 'center', justifyContent: 'center', width: 280, height: 280 },
+    sosButtonContainer: { position: 'relative', alignItems: 'center', justifyContent: 'center', width: 240, height: 240 },
     sosOuterRing1: {
-        position: 'absolute', width: 280, height: 280, borderRadius: 140,
+        position: 'absolute', width: 240, height: 240, borderRadius: 120,
         borderWidth: 2, borderColor: 'rgba(255, 255, 255, 0.1)',
     },
     sosOuterRing2: {
-        position: 'absolute', width: 230, height: 230, borderRadius: 115,
+        position: 'absolute', width: 190, height: 190, borderRadius: 95,
         borderWidth: 4, borderColor: 'rgba(255, 255, 255, 0.05)',
     },
     sosButton: {
-        width: 180, height: 180, borderRadius: 90,
+        width: 140, height: 140, borderRadius: 70,
         backgroundColor: '#dc2626',
         borderWidth: 8, borderColor: 'rgba(255, 255, 255, 0.2)',
         alignItems: 'center', justifyContent: 'center',
         shadowColor: 'rgba(220, 38, 38, 0.5)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 40, elevation: 20
     },
     sosButtonTriggered: { backgroundColor: '#19e66f', borderColor: 'rgba(255, 255, 255, 0.8)', shadowColor: '#19e66f' },
-    sosText: { fontSize: 56, fontWeight: '900', color: '#ffffff', letterSpacing: -2 },
+    sosText: { fontSize: 40, fontWeight: '900', color: '#ffffff', letterSpacing: -2 },
     holdRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
     holdText: { fontSize: 12, fontWeight: '800', color: 'rgba(255, 255, 255, 0.8)', textTransform: 'uppercase', letterSpacing: 2 },
 

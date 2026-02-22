@@ -20,6 +20,7 @@ export interface UserProfile {
     role: Role;
     inviteCode: string;
     notificationSounds?: boolean;
+    expoPushToken?: string;
 }
 
 interface AuthState {
@@ -58,11 +59,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const { user } = await signInWithEmailAndPassword(auth, email, pass);
             console.log('[Auth] Firebase login success. UID:', user.uid);
 
+            let pushToken = '';
+            try {
+                // Try to get token. Fails on web or emulators without proper setup
+                const { requestNotificationPermissions } = await import('./notifications');
+                const hasPerm = await requestNotificationPermissions();
+                if (hasPerm) {
+                    const Notifications = await import('expo-notifications');
+                    const Constants = await import('expo-constants');
+                    const projectId = Constants.default.expoConfig?.extra?.eas?.projectId;
+                    if (projectId) {
+                        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+                        pushToken = tokenData.data;
+                    }
+                }
+            } catch (err) {
+                console.log('Push token generation failed/skipped:', err);
+            }
+
             const docRef = doc(db, 'Users', user.uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 console.log('[Auth] Firestore profile found.');
-                set({ user, profile: docSnap.data() as UserProfile });
+
+                // Update token if changed
+                const profileData = docSnap.data() as UserProfile;
+                if (pushToken && profileData.expoPushToken !== pushToken) {
+                    await setDoc(docRef, { expoPushToken: pushToken }, { merge: true });
+                    profileData.expoPushToken = pushToken;
+                }
+
+                set({ user, profile: profileData });
             } else {
                 console.warn('[Auth] No Firestore profile found for user!');
                 set({ profile: null });
@@ -83,6 +110,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const { user } = await createUserWithEmailAndPassword(auth, email, pass);
             console.log('[Auth] Firebase registration success. UID:', user.uid);
 
+            let pushToken = '';
+            try {
+                const { requestNotificationPermissions } = await import('./notifications');
+                const hasPerm = await requestNotificationPermissions();
+                if (hasPerm) {
+                    const Notifications = await import('expo-notifications');
+                    const Constants = await import('expo-constants');
+                    const projectId = Constants.default.expoConfig?.extra?.eas?.projectId;
+                    if (projectId) {
+                        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+                        pushToken = tokenData.data;
+                    }
+                }
+            } catch (err) {
+                console.log('Push token generation failed/skipped:', err);
+            }
+
             const profile: UserProfile = {
                 id: user.uid,
                 name,
@@ -90,6 +134,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 role,
                 inviteCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
             };
+
+            if (pushToken) {
+                profile.expoPushToken = pushToken;
+            }
 
             console.log('[Auth] Creating Firestore profile...');
             await setDoc(doc(db, 'Users', user.uid), profile);
