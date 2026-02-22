@@ -1,50 +1,73 @@
-# Welcome to your Expo app 👋
+# 🏥 HealthSync: Premium Medicine & Family Monitor
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<p align="center">
+  <img src="./assets/images/icon.png" width="128" height="128" />
+</p>
 
-## Get started
+<p align="center">
+  <strong>The ultimate glassmorphic medication reminder and family synchronization ecosystem.</strong>
+</p>
 
-1. Install dependencies
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-19e66f?style=for-the-badge&logo=react" />
+  <img src="https://img.shields.io/badge/Architecture-Clean%20%26%20Modular-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Security-Firebase%20Hardened-ffca28?style=for-the-badge&logo=firebase" />
+</p>
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## ✨ Experience the Future of Caretelling
 
-   ```bash
-   npx expo start
-   ```
+HealthSync isn't just a reminder app; it's a bridge between care and technology. Designed with a **Premium Glassmorphic UI**, it provides a soothing, high-contrast experience for patients while offering powerful real-time monitoring for caregivers.
 
-In the output, you'll find options to open the app in a
+### 🛡️ Core Pillars
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+*   **🧪 Intelligent Scheduling**: Add complex medication cycles with personalized reminders and meal relations.
+*   **👨‍👩‍👧‍👦 Family Sync**: Real-time adherence tracking. Caregivers get notified the second a dose is missed or an emergency is triggered.
+*   **🚨 SOS Protocol**: One-tap emergency alerts that bypass silent modes to reach family members instantly.
+*   **📊 Adherence Intelligence**: Deep insights into medication history with automated missed-dose detection.
+*   **🔒 Fort-Knox Security**: Production-grade Firestore rules ensuring data is ONLY visible to approved caregivers.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Tech Stack & Architecture
 
-When you're ready, run:
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React Native (Expo) |
+| **Styling** | Vanilla CSS-in-JS + Glassmorphism |
+| **State** | Zustand (Global Persistence) |
+| **Backend** | Firebase (Auth, Firestore) |
+| **Realtime** | Firestore Snapshots & Triggers |
+| **Push** | Expo Push Notifications |
 
+---
+
+## 🚀 Deployment & Build
+
+The project is pre-configured for **EAS (Expo Application Services)** production builds.
+
+### To generate a Preview APK:
 ```bash
-npm run reset-project
+eas build -p android --profile preview
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Development Setup:
+1.  Clone & Install: `npm install`
+2.  Setup Env: Create `.env` with your Firebase config.
+3.  Launch: `npx expo start`
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🎨 Design Language
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+HealthSync utilizes a **Dynamic Design** system:
+- **Primary Color**: `#19e66f` (Vibrant Emerald)
+- **Aesthetics**: Translucent surfaces, subtle micro-animations (via Reanimated), and modern typography.
+- **Adaptive Icons**: Fully optimized for Android 13+ themed icons and bouncy adaptive launcher effects.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<p align="center">
+  Built with ❤️ by HealthSync Team
+</p>
