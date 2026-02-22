@@ -1,0 +1,49 @@
+
+> medicine_app@1.0.0 lint
+> expo lint
+
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(auth)\login.tsx
+  76:28  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(auth)\register.tsx
+  48:104  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(caregiver)\(tabs)\_layout.tsx
+  2:10  warning  'View' is defined but never used              @typescript-eslint/no-unused-vars
+  2:16  warning  'StyleSheet' is defined but never used        @typescript-eslint/no-unused-vars
+  2:28  warning  'TouchableOpacity' is defined but never used  @typescript-eslint/no-unused-vars
+  7:11  warning  'router' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(caregiver)\(tabs)\index.tsx
+   5:57  warning  'Clock' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  12:23  warning  'medicines' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  12:34  warning  'logs' is assigned a value but never used                                                                              @typescript-eslint/no-unused-vars
+  16:8   warning  React Hook useEffect has a missing dependency: 'fetchCaregiverData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(caregiver)\(tabs)\schedule.tsx
+  4:10  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+  4:32  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(caregiver)\(tabs)\settings.tsx
+  4:50  warning  'Users' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(patient)\(tabs)\_layout.tsx
+  2:10  warning  'View' is defined but never used              @typescript-eslint/no-unused-vars
+  2:16  warning  'StyleSheet' is defined but never used        @typescript-eslint/no-unused-vars
+  2:28  warning  'TouchableOpacity' is defined but never used  @typescript-eslint/no-unused-vars
+  3:43  warning  'Plus' is defined but never used              @typescript-eslint/no-unused-vars
+  7:11  warning  'router' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(patient)\(tabs)\family.tsx
+  1:17  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+  6:30  warning  'XCircle' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\guper\Downloads\stitch\medicine_app\app\(patient)\(tabs)\index.tsx
+  2:64  warning  'ActivityIndicator' is defined but never used  @typescript-eslint/no-unused-vars
+  4:21  warning  'Clock' is defined but never used              @typescript-eslint/no-unused-vars
+  7:28  warning  'Medicine' is defined but never used           @typescript-eslint/no-unused-vars
+  7:38  warning  'MedLog' is defined but never used             @typescript-eslint/no-unused-vars
+
+✖ 24 problems (2 errors, 22 warnings)
+
