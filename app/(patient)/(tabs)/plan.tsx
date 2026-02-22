@@ -46,14 +46,9 @@ export default function MyMedicinesScreen() {
                                 <View style={styles.gridCell} /><View style={styles.gridCell} />
                                 <View style={styles.gridCell} /><View style={styles.gridCell} />
                             </View>
-                            <View style={styles.floatingPill}>
-                                <Pill size={28} color="#19e66f" />
+                            <View style={styles.centeredPill}>
+                                <Pill size={80} color="#19e66f" strokeWidth={1.5} />
                             </View>
-                            <Image
-                                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCmPoxy4HmbJCdMCb79hCJ1E91sdzi4kO0AYNbiXn_7mzpd6RdWIH-SqYWYrihnkmfhWo4ZPcYC3O04u1jJ248USzR4x7QUgRsowR8r-s5j2Uz-uuTSDx1K5cjj0s0GLBy92hvNVGiLU1B3It7JyP1DbB-IKLU5_XczM7ILWZNKK-1zsVZXf5zyyYb-6ziPH9L70cYy8ao2NtAurUDebkhMg_-FyD6wBuEpKJwD1xIqjA5f062nM7sA-Nrt8kBuqbxui9Gazi1_pXc' }}
-                                style={styles.emptyImage}
-                                resizeMode="contain"
-                            />
                         </View>
                     </View>
 
@@ -162,13 +157,11 @@ const styles = StyleSheet.create({
     },
     gridBox: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 12, opacity: 0.4 },
     gridCell: { width: '45%', aspectRatio: 1, backgroundColor: '#f1f5f9', borderRadius: 12 },
-    floatingPill: {
-        position: 'absolute', top: -16, right: -8,
-        width: 64, height: 64, backgroundColor: 'rgba(25, 230, 111, 0.2)',
-        borderRadius: 32, alignItems: 'center', justifyContent: 'center',
-        transform: [{ rotate: '12deg' }], borderWidth: 1, borderColor: 'rgba(25, 230, 111, 0.4)', zIndex: 10
+    centeredPill: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center', justifyContent: 'center',
+        zIndex: 10
     },
-    emptyImage: { position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.9 },
     emptyTitle: { fontSize: 26, fontWeight: '700', color: '#0f172a', marginBottom: 12, textAlign: 'center' },
     emptySub: { fontSize: 16, color: '#64748b', textAlign: 'center', lineHeight: 24, maxWidth: 260, marginBottom: 40 },
     addBtn: {

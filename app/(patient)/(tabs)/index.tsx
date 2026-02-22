@@ -147,8 +147,9 @@ export default function PatientDashboard() {
                 {/* Header Section */}
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.greeting}>Good morning, {profile?.name?.split(' ')[0] || 'User'}</Text>
-                        <Text style={styles.dateText}>{todayStr}</Text>
+                        <Text style={styles.greeting}>Good Morning,</Text>
+                        <Text style={styles.name}>{profile?.name}</Text>
+                        <Text style={styles.roleLabel}>Loved One</Text>
                     </View>
                     <View style={styles.progressCircle}>
                         <Text style={styles.progressText}>{adherence}%</Text>
@@ -295,8 +296,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
         paddingHorizontal: 24, marginBottom: 24,
     },
-    greeting: { fontSize: 24, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
-    dateText: { fontSize: 14, fontWeight: '500', color: '#64748b', marginTop: 4 },
+    greeting: { fontSize: 12, fontWeight: '600', color: '#64748b' },
+    name: { fontSize: 20, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
+    roleLabel: { fontSize: 10, fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
     progressCircle: {
         width: 56, height: 56, borderRadius: 28,
         backgroundColor: '#fff',

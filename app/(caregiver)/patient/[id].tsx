@@ -113,7 +113,7 @@ export default function PatientDetailScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
                     <ChevronLeft size={24} color="#0f172a" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Patient Detail</Text>
+                <Text style={styles.headerTitle}>Family Detail</Text>
                 <TouchableOpacity style={styles.iconBtn}>
                     <MoreHorizontal size={24} color="#0f172a" />
                 </TouchableOpacity>
@@ -140,6 +140,7 @@ export default function PatientDetailScreen() {
                         <Phone size={20} color="#0f172a" fill="#0f172a" />
                         <Text style={styles.callBtnText}>Call {patient.name.split(' ')[0]}</Text>
                     </TouchableOpacity>
+                    <Text style={styles.roleLabel}>Family Member</Text>
                 </View>
 
                 {/* Quick Metrics */}
@@ -342,6 +343,7 @@ const styles = StyleSheet.create({
     profileStatus: { fontSize: 14, fontWeight: '500', color: '#64748b', marginBottom: 24 },
     callBtn: { width: '100%', maxWidth: 400, backgroundColor: '#19e66f', paddingVertical: 16, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, shadowColor: 'rgba(25, 230, 111, 0.2)', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 1, shadowRadius: 16, elevation: 6 },
     callBtnText: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
+    roleLabel: { fontSize: 10, fontWeight: '800', color: '#10b981', textTransform: 'uppercase', letterSpacing: 1, marginTop: 12 },
 
     metricsGrid: { flexDirection: 'row', gap: 16, marginBottom: 24 },
     metricCard: { flex: 1, backgroundColor: '#fff', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: '#f1f5f9', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },

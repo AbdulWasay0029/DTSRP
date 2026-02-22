@@ -34,13 +34,13 @@ export default function FamilyScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Family & Caregivers</Text>
+                <Text style={styles.headerTitle}>Family & Guardians</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.inviteCodeCard}>
                     <Text style={styles.inviteTitle}>Your Invite Code</Text>
-                    <Text style={styles.inviteDesc}>Share this code with your caregiver so they can monitor your adherence.</Text>
+                    <Text style={styles.inviteDesc}>Share this code with your guardian so they can monitor your health stats.</Text>
                     <View style={styles.codeBox}>
                         <Text style={styles.codeText}>{profile?.inviteCode}</Text>
                     </View>
@@ -60,7 +60,7 @@ export default function FamilyScreen() {
                                     <Users size={24} color="#3b82f6" />
                                 </View>
                                 <View style={{ flex: 1, marginLeft: 16 }}>
-                                    <Text style={styles.connName}>Caregiver ID: {c.caregiverId.slice(0, 6)}</Text>
+                                    <Text style={styles.connName}>Guardian ID: {c.caregiverId.slice(0, 6)}</Text>
                                     <Text style={styles.connStatus}>Wants to connect with you</Text>
                                 </View>
                                 <View style={styles.reviewBadge}>
@@ -72,9 +72,9 @@ export default function FamilyScreen() {
                 )}
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Connected Caregivers</Text>
+                    <Text style={styles.sectionTitle}>Connected Guardians</Text>
                     {approvedConnections.length === 0 && (
-                        <Text style={styles.emptyText}>No caregivers connected yet.</Text>
+                        <Text style={styles.emptyText}>No guardians connected yet.</Text>
                     )}
                     {approvedConnections.map(c => (
                         <View key={c.id} style={styles.connCard}>
@@ -82,7 +82,7 @@ export default function FamilyScreen() {
                                 <CheckCircle size={24} color="#19e66f" />
                             </View>
                             <View style={{ flex: 1, marginLeft: 16 }}>
-                                <Text style={styles.connName}>Caregiver ID: {c.caregiverId.slice(0, 6)}</Text>
+                                <Text style={styles.connName}>Guardian ID: {c.caregiverId.slice(0, 6)}</Text>
                                 <Text style={styles.connStatus}>Connected</Text>
                             </View>
                         </View>
@@ -123,13 +123,13 @@ export default function FamilyScreen() {
 
                             <View style={styles.profileInfo}>
                                 <View style={styles.nameRow}>
-                                    <Text style={styles.profileName}>Caregiver {selectedPending?.caregiverId.slice(0, 4)}</Text>
+                                    <Text style={styles.profileName}>Guardian {selectedPending?.caregiverId.slice(0, 4)}</Text>
                                     <View style={styles.roleTag}>
                                         <Text style={styles.roleTagText}>Family</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.profileDesc}>
-                                    This caregiver wants to connect to monitor your health and help coordinate your care.
+                                    This guardian wants to connect to monitor your health and help coordinate your care.
                                 </Text>
                             </View>
                         </View>
@@ -168,7 +168,7 @@ export default function FamilyScreen() {
                         </TouchableOpacity>
 
                         <View style={styles.footerNoteRow}>
-                            <Text style={styles.footerNoteText}>Secure patient-caregiver link.</Text>
+                            <Text style={styles.footerNoteText}>Secure connection link.</Text>
                         </View>
                         <Text style={styles.footerNoteSub}>You can change this at any time in your privacy settings.</Text>
 

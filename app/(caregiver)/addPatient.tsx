@@ -39,7 +39,7 @@ export default function AddPatientScreen() {
         setLoading(true);
         try {
             await connectPatient(fullCode);
-            Alert.alert('Success', 'Connection request sent to patient.', [
+            Alert.alert('Success', 'Request sent to family member.', [
                 { text: 'OK', onPress: () => router.back() }
             ]);
         } catch (e: any) {
@@ -58,7 +58,7 @@ export default function AddPatientScreen() {
                     <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
                         <ChevronLeft size={24} color="#0f172a" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Connect Patient</Text>
+                    <Text style={styles.headerTitle}>Link with Family</Text>
                     <View style={{ width: 44 }} />
                 </View>
 
@@ -131,7 +131,7 @@ export default function AddPatientScreen() {
                         onPress={handleConnect}
                         disabled={loading}
                     >
-                        <Text style={styles.connectBtnText}>{loading ? 'Connecting...' : 'Connect'}</Text>
+                        <Text style={styles.connectBtnText}>{loading ? 'Connecting...' : 'Link Member'}</Text>
                         {!loading && <ChevronRight size={24} color="#0f172a" />}
                     </TouchableOpacity>
 

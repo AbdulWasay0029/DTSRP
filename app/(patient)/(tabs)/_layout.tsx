@@ -40,7 +40,7 @@ export default function PatientTabsLayout() {
                 <Tabs.Screen
                     name="plan"
                     options={{
-                        title: 'Meds',
+                        title: 'Health',
                         tabBarIcon: ({ color }) => <Pill size={28} color={color} strokeWidth={2.5} />,
                     }}
                 />

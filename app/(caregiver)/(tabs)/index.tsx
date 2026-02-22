@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { Bell, ArrowRight, CheckCircle2, AlertTriangle, Plus } from 'lucide-react-native';
 import Animated, { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../libs/store';
 import { useMedicineStore } from '../../../libs/medicineStore';
 
@@ -49,15 +49,16 @@ export default function CaregiverDashboard() {
                     <View>
                         <Text style={styles.greeting}>Good Morning,</Text>
                         <Text style={styles.name}>{profile?.name}</Text>
+                        <Text style={styles.roleLabel}>Guardian</Text>
                     </View>
                 </View>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-                {/* Your Patients */}
+                {/* Your Loved Ones */}
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Your Patients</Text>
+                    <Text style={styles.sectionTitle}>Your Family</Text>
                     <TouchableOpacity style={styles.viewAllBtn}>
                         <Text style={styles.viewAllText}>View All</Text>
                         <ArrowRight size={16} color="#19e66f" />
@@ -66,7 +67,7 @@ export default function CaregiverDashboard() {
 
                 <View style={styles.patientsList}>
                     {patients.length === 0 ? (
-                        <Text style={styles.emptyText}>No connected patients yet.</Text>
+                        <Text style={styles.emptyText}>No connected family members yet.</Text>
                     ) : (
                         patients.map((p, idx) => {
                             const pMeds = medicines.filter(m => m.patientId === p.id);
@@ -95,58 +96,57 @@ export default function CaregiverDashboard() {
                             if (totalDoses === 0) statusDesc = 'No medicines scheduled';
 
                             return (
-                                <Animated.TouchableOpacity
-                                    entering={FadeInRight.delay(idx * 150)}
-                                    layout={Layout.springify()}
-                                    key={p.id}
-                                    style={[styles.patientCard, isAlert && styles.patientCardAlert]}
-                                    activeOpacity={0.8}
-                                    onPress={() => router.push(`/(caregiver)/patient/${p.id}` as any)}
-                                >
-                                    {isAlert && (
-                                        <View style={styles.alertTag}>
-                                            <AlertTriangle size={12} color="#fff" />
-                                            <Text style={styles.alertTagText}>MISSED DOSE</Text>
-                                        </View>
-                                    )}
-
-                                    <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
-                                        <View style={styles.patientAvatarWrap}>
-                                            <Image
-                                                source={{ uri: 'https://ui-avatars.com/api/?name=' + p.name + '&background=0f172a&color=fff' }}
-                                                style={styles.patientAvatar}
-                                            />
-                                            <View style={[styles.scoreBadge, isAlert && styles.scoreBadgeAlert]}>
-                                                <Text style={styles.scoreText}>{adherence}%</Text>
+                                <Animated.View entering={FadeInRight.delay(idx * 150)} layout={Layout.springify()}>
+                                    <TouchableOpacity
+                                        key={p.id}
+                                        style={[styles.patientCard, isAlert && styles.patientCardAlert]}
+                                        activeOpacity={0.8}
+                                        onPress={() => router.push(`/(caregiver)/patient/${p.id}` as any)}
+                                    >
+                                        {isAlert && (
+                                            <View style={styles.alertTag}>
+                                                <AlertTriangle size={12} color="#fff" />
+                                                <Text style={styles.alertTagText}>MISSED DOSE</Text>
                                             </View>
-                                        </View>
+                                        )}
 
-                                        <View style={{ flex: 1 }}>
-                                            <View style={styles.patientHeaderRow}>
-                                                <Text style={styles.patientName}>{p.name}</Text>
-                                                <View style={[styles.statusPill, isAlert && styles.statusPillAlert]}>
-                                                    <Text style={[styles.statusPillText, isAlert && styles.statusPillTextAlert]}>{statusText}</Text>
+                                        <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
+                                            <View style={styles.patientAvatarWrap}>
+                                                <Image
+                                                    source={{ uri: 'https://ui-avatars.com/api/?name=' + p.name + '&background=0f172a&color=fff' }}
+                                                    style={styles.patientAvatar}
+                                                />
+                                                <View style={[styles.scoreBadge, isAlert && styles.scoreBadgeAlert]}>
+                                                    <Text style={styles.scoreText}>{adherence}%</Text>
                                                 </View>
                                             </View>
 
-                                            <View style={styles.statusDescRow}>
-                                                {isAlert ? (
-                                                    <AlertTriangle size={14} color="#ef4444" />
-                                                ) : (
-                                                    <CheckCircle2 size={14} color="#19e66f" />
-                                                )}
-                                                <Text style={[styles.statusDescText, isAlert && { color: '#ef4444' }]}>
-                                                    {statusDesc}
-                                                </Text>
-                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <View style={styles.patientHeaderRow}>
+                                                    <Text style={styles.patientName}>{p.name}</Text>
+                                                    <View style={[styles.statusPill, isAlert && styles.statusPillAlert]}>
+                                                        <Text style={[styles.statusPillText, isAlert && styles.statusPillTextAlert]}>{statusText}</Text>
+                                                    </View>
+                                                </View>
 
-                                            <View style={styles.progressBarBg}>
-                                                <View style={[styles.progressBarFill, { width: `${adherence}%` }, isAlert && { backgroundColor: '#ef4444' }]} />
-                                            </View>
+                                                <View style={styles.statusDescRow}>
+                                                    {isAlert ? (
+                                                        <AlertTriangle size={14} color="#ef4444" />
+                                                    ) : (
+                                                        <CheckCircle2 size={14} color="#19e66f" />
+                                                    )}
+                                                    <Text style={[styles.statusDescText, isAlert && { color: '#ef4444' }]}>
+                                                        {statusDesc}
+                                                    </Text>
+                                                </View>
 
+                                                <View style={styles.progressBarBg}>
+                                                    <View style={[styles.progressBarFill, { width: `${adherence}%` }, isAlert && { backgroundColor: '#ef4444' }]} />
+                                                </View>
+                                            </View>
                                         </View>
-                                    </View>
-                                </Animated.TouchableOpacity>
+                                    </TouchableOpacity>
+                                </Animated.View>
                             );
                         })
                     )}
@@ -160,7 +160,7 @@ export default function CaregiverDashboard() {
                         <View style={styles.addPatientIcon}>
                             <Plus size={32} color="#19e66f" />
                         </View>
-                        <Text style={styles.addPatientText}>Add New Patient</Text>
+                        <Text style={styles.addPatientText}>Link Family Member</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
     avatarImg: { width: '100%', height: '100%' },
     greeting: { fontSize: 12, fontWeight: '600', color: '#64748b' },
     name: { fontSize: 20, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
+    roleLabel: { fontSize: 10, fontWeight: '800', color: '#10b981', textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
 
     scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
     sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 12 },

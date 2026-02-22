@@ -42,8 +42,8 @@ export default function Register() {
                 </View>
 
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Join MediCare</Text>
-                    <Text style={styles.subtitle}>Start managing medications and monitoring your family&apos;s health today.</Text>
+                    <Text style={styles.title}>Join HealthSync</Text>
+                    <Text style={styles.subtitle}>Start managing health and monitoring your family's wellbeing today.</Text>
                 </View>
 
                 <View style={styles.form}>
@@ -79,8 +79,8 @@ export default function Register() {
                             <View style={[styles.roleIconBox, role === 'patient' && styles.roleIconBoxActive]}>
                                 <User size={28} color={role === 'patient' ? '#fff' : '#475569'} />
                             </View>
-                            <Text style={styles.roleCardTitle}>Patient</Text>
-                            <Text style={styles.roleCardDesc}>Manage my meds</Text>
+                            <Text style={styles.roleCardTitle}>Loved One</Text>
+                            <Text style={styles.roleCardDesc}>Manage my health</Text>
                             <View style={styles.roleCheck}>
                                 {role === 'patient' ? (
                                     <CheckCircle2 color="#19e66f" size={20} />
@@ -98,8 +98,8 @@ export default function Register() {
                             <View style={[styles.roleIconBox, role === 'caregiver' && styles.roleIconBoxActive]}>
                                 <Users size={28} color={role === 'caregiver' ? '#fff' : '#475569'} />
                             </View>
-                            <Text style={styles.roleCardTitle}>Caregiver</Text>
-                            <Text style={styles.roleCardDesc}>Monitor others</Text>
+                            <Text style={styles.roleCardTitle}>Guardian</Text>
+                            <Text style={styles.roleCardDesc}>Protect my family</Text>
                             <View style={styles.roleCheck}>
                                 {role === 'caregiver' ? (
                                     <CheckCircle2 color="#19e66f" size={20} />
