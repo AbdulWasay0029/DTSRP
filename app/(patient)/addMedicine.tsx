@@ -215,7 +215,15 @@ export default function AddMedicineScreen() {
                                         <TouchableOpacity
                                             key={f}
                                             style={[styles.freqBtn, frequency === f && styles.freqBtnActive]}
-                                            onPress={() => setFrequency(f)}
+                                            onPress={() => {
+                                                setFrequency(f);
+                                                if (f === '1 Min Test') {
+                                                    // Set first time to 1 min from now so it shows up instantly
+                                                    const d = new Date();
+                                                    d.setMinutes(d.getMinutes() + 1);
+                                                    setTimes([d]);
+                                                }
+                                            }}
                                         >
                                             <Text style={[styles.freqText, frequency === f && styles.freqTextActive]}>{f}</Text>
                                         </TouchableOpacity>

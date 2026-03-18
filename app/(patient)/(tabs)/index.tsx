@@ -32,7 +32,7 @@ const parseTimeMs = (timeStr: string): number => {
 
 export default function PatientDashboard() {
     const router = useRouter();
-    const { profile } = useAuthStore();
+    const { user, profile } = useAuthStore();
     const { medicines, logs, fetchPatientData, markTaken } = useMedicineStore();
 
     const [todayDoses, setTodayDoses] = useState<Dose[]>([]);
@@ -42,8 +42,10 @@ export default function PatientDashboard() {
     const [permissionDenied, setPermissionDenied] = useState(false);
 
     useEffect(() => {
-        fetchPatientData();
-    }, [fetchPatientData]);
+        if (user) {
+            fetchPatientData();
+        }
+    }, [user, fetchPatientData]);
 
     useEffect(() => {
         (async () => {
@@ -72,7 +74,7 @@ export default function PatientDashboard() {
                 const isAfterCreation = doseTimeMs > medCreatedMs;
                 const isCreationDay = med.createdAt.startsWith(todayStr);
 
-                if (isCreationDay && !isAfterCreation) {
+                if (isCreationDay && !isAfterCreation && med.frequency !== '1 Min Test') {
                     return; // Skip this dose for today as it was before the med was added
                 }
 

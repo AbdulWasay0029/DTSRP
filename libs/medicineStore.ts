@@ -169,12 +169,7 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
         onSnapshot(qLogs, async (snapshot) => {
             const ls: MedLog[] = [];
             snapshot.forEach((doc) => ls.push({ id: doc.id, ...doc.data() } as MedLog));
-            // Only keep logs for the patient's medicines
-            const meds = get().medicines;
-            const medsIds = meds.map(m => m.id);
-            const myLogs = ls.filter(l => medsIds.includes(l.medicineId));
-            set({ logs: myLogs });
-
+            set({ logs: ls });
         });
 
         // Start missed dose periodic checker
@@ -228,11 +223,7 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
                 onSnapshot(qLogs, async (s3) => {
                     const ls: MedLog[] = [];
                     s3.forEach(l => ls.push({ id: l.id, ...l.data() } as MedLog));
-                    const meds = get().medicines;
-                    const medsIds = meds.map(m => m.id);
-                    const myLogs = ls.filter(l => medsIds.includes(l.medicineId));
-                    set({ logs: myLogs });
-
+                    set({ logs: ls });
                 });
 
                 // Start missed dose periodic checker for caregivers checking patients

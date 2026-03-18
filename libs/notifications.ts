@@ -13,14 +13,16 @@ Notifications.setNotificationHandler({
 });
 
 // Configure android channel for high priority
-if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('medication-reminders', {
+export async function ensureNotificationChannel() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('medication-reminders', {
         name: 'Medication Reminders',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#19e66f',
         sound: 'default',
     });
+  }
 }
 
 export async function requestNotificationPermissions() {
@@ -45,6 +47,7 @@ export async function cancelMedicineNotifications(notificationIds?: string[]) {
 }
 
 export async function scheduleMedicineNotifications(med: Medicine): Promise<string[]> {
+    await ensureNotificationChannel();
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
         throw new Error('Notification permissions not granted');
@@ -62,6 +65,8 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
                     sound: 'default',
                     priority: Notifications.AndroidNotificationPriority.MAX,
                     data: { medicineId: med.id },
+                    // @ts-ignore
+                    channelId: 'medication-reminders',
                 },
                 trigger: {
                     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -75,7 +80,7 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
             let [hours, minutes] = timeStr.split(':').map(Number);
             if (period === 'PM' && hours !== 12) hours += 12;
             if (period === 'AM' && hours === 12) hours = 0;
-
+ 
             const id = await Notifications.scheduleNotificationAsync({
                 content: {
                     title: `Time for ${med.name}`,
@@ -83,6 +88,8 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
                     sound: 'default',
                     priority: Notifications.AndroidNotificationPriority.MAX,
                     data: { medicineId: med.id },
+                    // @ts-ignore
+                    channelId: 'medication-reminders',
                 },
                 trigger: {
                     type: Notifications.SchedulableTriggerInputTypes.DAILY,
