@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Pill, CheckCircle2, Circle, PhoneCall, AlertCircle, Activity, ChevronRight } from 'lucide-react-native';
+import { Pill, CheckCircle2, Circle, AlertCircle, Activity, ChevronRight, Settings } from 'lucide-react-native';
 import Animated, { FadeInUp, FadeInDown, Layout } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
@@ -58,23 +58,37 @@ export default function PatientDashboard() {
 
     // Parse medicines into strict flat dose instances
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
         const doses: Dose[] = [];
 
         medicines.forEach(med => {
             med.times.forEach((t, i) => {
+                const doseTimeMs = parseTimeMs(t);
+                const medCreatedMs = new Date(med.createdAt).getTime();
+
+                // 1. Ignore if scheduled time is before medicine creation (for today only)
+                // This prevents "missed" alerts for doses that should haven't happened yet.
+                const isAfterCreation = doseTimeMs > medCreatedMs;
+                const isCreationDay = med.createdAt.startsWith(todayStr);
+
+                if (isCreationDay && !isAfterCreation) {
+                    return; // Skip this dose for today as it was before the med was added
+                }
+
                 // Check if taken today
                 const takenLog = logs.find(l =>
                     l.medicineId === med.id &&
                     l.status === 'taken' &&
-                    l.date.startsWith(today)
+                    l.date.startsWith(todayStr) &&
+                    (l.expectedTime === t || !l.expectedTime)
                 );
 
                 doses.push({
                     id: `${med.id}-${i}`,
                     medicine: med,
                     timeStr: t,
-                    timeMs: parseTimeMs(t),
+                    timeMs: doseTimeMs,
                     isTaken: !!takenLog
                 });
             });
@@ -88,10 +102,15 @@ export default function PatientDashboard() {
         const takenCount = doses.filter(d => d.isTaken).length;
         setAdherence(doses.length > 0 ? Math.round((takenCount / doses.length) * 100) : 0);
 
-        // Next dose
-        const pending = doses.filter(d => !d.isTaken);
-        if (pending.length > 0) {
-            setNextDose(pending[0]);
+        // Next dose: Find first pending dose that is NOT too far in the past (e.g. > 2 hours)
+        const now = Date.now();
+        const upcomingOrRecent = doses.filter(d =>
+            !d.isTaken &&
+            (d.timeMs > now || now - d.timeMs < 2 * 60 * 60 * 1000)
+        );
+
+        if (upcomingOrRecent.length > 0) {
+            setNextDose(upcomingOrRecent[0]);
         } else {
             setNextDose(null);
         }
@@ -151,8 +170,16 @@ export default function PatientDashboard() {
                         <Text style={styles.name}>{profile?.name}</Text>
                         <Text style={styles.roleLabel}>Family Member</Text>
                     </View>
-                    <View style={styles.progressCircle}>
-                        <Text style={styles.progressText}>{adherence}%</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+                        <TouchableOpacity
+                            style={styles.settingsBtn}
+                            onPress={() => router.push('/(patient)/(tabs)/settings' as any)}
+                        >
+                            <Settings size={20} color="#64748b" />
+                        </TouchableOpacity>
+                        <View style={styles.progressCircle}>
+                            <Text style={styles.progressText}>{adherence}%</Text>
+                        </View>
                     </View>
                 </View>
 
@@ -233,7 +260,7 @@ export default function PatientDashboard() {
                 <View style={styles.scheduleSection}>
                     <View style={styles.scheduleHeaderRow}>
                         <Text style={styles.sectionTitle}>Today&apos;s Schedule</Text>
-                        <TouchableOpacity onPress={() => router.push('/(patient)/plan' as any)}>
+                        <TouchableOpacity onPress={() => router.push('/(patient)/(tabs)/plan' as any)}>
                             <Text style={styles.viewAllText}>View All</Text>
                         </TouchableOpacity>
                     </View>
@@ -270,14 +297,6 @@ export default function PatientDashboard() {
 
             </ScrollView>
 
-            {/* Persistent RED SOS Button */}
-            <TouchableOpacity
-                style={styles.sosFab}
-                activeOpacity={0.9}
-                onPress={() => router.push('/(patient)/sos' as any)}
-            >
-                <PhoneCall size={32} color="#ffffff" strokeWidth={2.5} />
-            </TouchableOpacity>
         </SafeAreaView>
     );
 }
@@ -307,6 +326,11 @@ const styles = StyleSheet.create({
         shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
     },
     progressText: { fontSize: 16, fontWeight: '700', color: '#19e66f' },
+    settingsBtn: {
+        width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    },
 
     adherenceWrapper: { paddingHorizontal: 24, marginBottom: 24 },
     adherenceCard: {
@@ -388,24 +412,5 @@ const styles = StyleSheet.create({
     medName: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
     medNameTaken: { textDecorationLine: 'line-through', color: '#94a3b8' },
     medTime: { fontSize: 14, fontWeight: '500', color: '#64748b', marginTop: 4 },
-    emptyText: { color: '#64748b', textAlign: 'center', padding: 24 },
-
-    sosFab: {
-        position: 'absolute',
-        bottom: 24,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: '#dc2626', // emergency-red
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#dc2626',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
-        elevation: 8,
-        borderWidth: 3,
-        borderColor: '#ffffff',
-    }
+    emptyText: { color: '#64748b', textAlign: 'center', padding: 24 }
 });

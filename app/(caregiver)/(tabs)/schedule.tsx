@@ -50,7 +50,7 @@ export default function CaregiverScheduleScreen() {
             <View style={styles.header}>
                 <View>
                     <Text style={styles.headerTitle}>Schedule</Text>
-                    <Text style={styles.headerSubtitle}>Upcoming doses for patients</Text>
+                    <Text style={styles.headerSubtitle}>Upcoming doses for family members</Text>
                 </View>
                 <TouchableOpacity style={styles.filterBtn}>
                     <Filter size={20} color="#19e66f" />
@@ -59,7 +59,7 @@ export default function CaregiverScheduleScreen() {
 
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 {timelineBlocks.length === 0 ? (
-                    <Text style={{ textAlign: 'center', color: '#64748b', marginTop: 40 }}>No medicines scheduled for your patients today.</Text>
+                    <Text style={{ textAlign: 'center', color: '#64748b', marginTop: 40 }}>No medicines scheduled for family members today.</Text>
                 ) : (
                     <View style={styles.timeline}>
                         <View style={styles.timelineLine} />

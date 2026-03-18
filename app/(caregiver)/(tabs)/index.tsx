@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, ArrowRight, CheckCircle2, AlertTriangle, Plus } from 'lucide-react-native';
+import { Bell, ArrowRight, CheckCircle2, AlertTriangle, Plus, Settings } from 'lucide-react-native';
 import Animated, { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../libs/store';
@@ -39,30 +39,20 @@ export default function CaregiverDashboard() {
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <View style={styles.headerProfile}>
-                    <View style={styles.avatarBox}>
-                        <Image
-                            source={{ uri: 'https://ui-avatars.com/api/?name=' + (profile?.name || 'Caregiver') + '&background=19e66f&color=fff' }}
-                            style={styles.avatarImg}
-                        />
-                    </View>
-                    <View>
-                        <Text style={styles.greeting}>Good Morning,</Text>
-                        <Text style={styles.name}>{profile?.name}</Text>
-                        <Text style={styles.roleLabel}>Family Guardian</Text>
-                    </View>
-                </View>
+                <Text style={styles.headerTitle}>My Family</Text>
+                <TouchableOpacity
+                    style={styles.settingsBtn}
+                    onPress={() => router.push('/(caregiver)/(tabs)/settings' as any)}
+                >
+                    <Settings size={20} color="#64748b" />
+                </TouchableOpacity>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
                 {/* Your Loved Ones */}
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Your Family</Text>
-                    <TouchableOpacity style={styles.viewAllBtn}>
-                        <Text style={styles.viewAllText}>View All</Text>
-                        <ArrowRight size={16} color="#19e66f" />
-                    </TouchableOpacity>
+                    <Text style={styles.sectionTitle}>Connected Members</Text>
                 </View>
 
                 <View style={styles.patientsList}>
@@ -164,23 +154,7 @@ export default function CaregiverDashboard() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Stats Section */}
-                <View style={styles.statsSection}>
-                    <Text style={styles.sectionTitle}>Overall Adherence</Text>
-                    <View style={styles.statsCard}>
-                        <View>
-                            <Text style={styles.statsBigValue}>{familyAdherence ?? 0}%</Text>
-                            <Text style={styles.statsSubtitle}>Daily Family Average</Text>
-                        </View>
-                        <View style={styles.chartMock}>
-                            <View style={[styles.chartBar, { height: '50%', opacity: 0.2 }]} />
-                            <View style={[styles.chartBar, { height: '75%', opacity: 0.2 }]} />
-                            <View style={[styles.chartBar, { height: '66%', opacity: 0.4 }]} />
-                            <View style={[styles.chartBar, { height: '83%', opacity: 0.3 }]} />
-                            <View style={[styles.chartBar, { height: '100%', opacity: 1 }]} />
-                        </View>
-                    </View>
-                </View>
+
 
             </ScrollView>
         </SafeAreaView>
@@ -197,9 +171,12 @@ const styles = StyleSheet.create({
     headerProfile: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     avatarBox: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden', borderWidth: 2, borderColor: '#19e66f' },
     avatarImg: { width: '100%', height: '100%' },
-    greeting: { fontSize: 12, fontWeight: '600', color: '#64748b' },
-    name: { fontSize: 20, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
-    roleLabel: { fontSize: 10, fontWeight: '800', color: '#10b981', textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
+    headerTitle: { fontSize: 24, fontWeight: '700', color: '#0f172a', letterSpacing: -0.5 },
+    settingsBtn: {
+        width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    },
 
     scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
     sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, marginTop: 12 },

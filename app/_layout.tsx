@@ -35,26 +35,44 @@ function useProtectedRoute() {
 
 export default function RootLayout() {
     const { initialized } = useAuthStore();
+    const router = useRouter();
 
     useProtectedRoute();
 
     useEffect(() => {
         // Listener for foreground notifications
-        const subscription = Notifications.addNotificationReceivedListener(notification => {
+        const foregroundSub = Notifications.addNotificationReceivedListener(notification => {
             const { title, body } = notification.request.content;
             const data = notification.request.content.data;
 
-            if (data?.type === 'sos') {
-                Alert.alert(`🚨 ${title || 'SOS Alert'}`, body || 'A patient needs assistance.', [
-                    { text: 'View Patient', onPress: () => { } }
+            if (data?.type === 'sos' && data.patientId) {
+                Alert.alert(`🚨 ${title || 'SOS Alert'}`, body || 'A family member needs assistance.', [
+                    {
+                        text: 'View Member',
+                        onPress: () => router.push(`/(caregiver)/patient/${data.patientId}` as any)
+                    }
                 ]);
             } else if (data?.type === 'missed_dose') {
                 Alert.alert(`⚠️ ${title || 'Missed Dose'}`, body || 'A medication dose was missed.');
             }
         });
 
-        return () => subscription.remove();
-    }, []);
+        // Listener for notification TAPS (Background/Closed state)
+        const responseSub = Notifications.addNotificationResponseReceivedListener(response => {
+            const data = response.notification.request.content.data;
+
+            if (data?.type === 'sos' && data.patientId) {
+                router.push(`/(caregiver)/patient/${data.patientId}` as any);
+            } else if (data?.patientId) {
+                router.push(`/(caregiver)/patient/${data.patientId}` as any);
+            }
+        });
+
+        return () => {
+            foregroundSub.remove();
+            responseSub.remove();
+        };
+    }, [router]);
 
     if (!initialized) {
         return (

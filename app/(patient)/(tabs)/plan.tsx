@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Pill, Plus, Trash2, Edit2, MoreHorizontal, ChevronLeft } from 'lucide-react-native';
+import { Pill, Plus, Trash2, ChevronLeft } from 'lucide-react-native';
 import { useMedicineStore, Medicine } from '../../../libs/medicineStore';
 
 export default function MyMedicinesScreen() {
@@ -20,53 +20,7 @@ export default function MyMedicinesScreen() {
         );
     };
 
-    const handleEdit = (med: Medicine) => {
-        // We'll navigate to the addMedicine flow with params if we want, or just basic routing for MVP.
-        router.push('/(patient)/addMedicine');
-    };
 
-    if (medicines.length === 0) {
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-                        <ChevronLeft size={24} color="#0f172a" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Medicines</Text>
-                    <TouchableOpacity style={styles.headerBtn}>
-                        <MoreHorizontal size={24} color="#0f172a" />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.emptyContent}>
-                    <View style={styles.illustrationContainer}>
-                        <View style={styles.glow} />
-                        <View style={styles.imageBox}>
-                            <View style={styles.gridBox}>
-                                <View style={styles.gridCell} /><View style={styles.gridCell} />
-                                <View style={styles.gridCell} /><View style={styles.gridCell} />
-                            </View>
-                            <View style={styles.centeredPill}>
-                                <Pill size={80} color="#19e66f" strokeWidth={1.5} />
-                            </View>
-                        </View>
-                    </View>
-
-                    <Text style={styles.emptyTitle}>No Medicines Yet</Text>
-                    <Text style={styles.emptySub}>Add your first medication to stay on track with your health.</Text>
-
-                    <TouchableOpacity
-                        style={styles.addBtn}
-                        activeOpacity={0.9}
-                        onPress={() => router.push('/(patient)/addMedicine')}
-                    >
-                        <Plus size={24} color="#0f172a" strokeWidth={3} />
-                        <Text style={styles.addBtnText}>Add Medicine</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        );
-    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -75,46 +29,47 @@ export default function MyMedicinesScreen() {
                     <ChevronLeft size={24} color="#0f172a" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Medicines</Text>
-                <TouchableOpacity style={styles.headerBtn}>
-                    <MoreHorizontal size={24} color="#0f172a" />
-                </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-                {medicines.map((med) => (
-                    <View key={med.id} style={styles.medCard}>
-                        <View style={styles.medCardHeader}>
-                            <View style={styles.medIconWrapper}>
-                                <Pill size={24} color="#19e66f" />
+            {medicines.length === 0 ? (
+                <View style={styles.emptyContent}>
+                    <Text style={styles.emptyTitle}>No Medicines Yet</Text>
+                    <Text style={styles.emptySub}>Tap the + button to add your first medication and stay on track with your health.</Text>
+                </View>
+            ) : (
+                <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+                    {medicines.map((med) => (
+                        <View key={med.id} style={styles.medCard}>
+                            <View style={styles.medCardHeader}>
+                                <View style={styles.medIconWrapper}>
+                                    <Pill size={24} color="#19e66f" />
+                                </View>
+                                <View style={styles.medInfo}>
+                                    <Text style={styles.medName}>{med.name}</Text>
+                                    <Text style={styles.medDosage}>{med.dosage}</Text>
+                                </View>
                             </View>
-                            <View style={styles.medInfo}>
-                                <Text style={styles.medName}>{med.name}</Text>
-                                <Text style={styles.medDosage}>{med.dosage}</Text>
+
+                            <View style={styles.medDetails}>
+                                <Text style={styles.medTimesText}>
+                                    {med.times.length} {med.times.length === 1 ? 'time' : 'times'} a day ({med.times.join(', ')})
+                                </Text>
+                                <Text style={styles.medInventoryText}>
+                                    {med.frequency} until {new Date(med.endDate).toLocaleDateString()}
+                                </Text>
+                            </View>
+
+                            <View style={styles.medActions}>
+
+                                <TouchableOpacity style={[styles.actionBtn, styles.deleteBtn]} onPress={() => handleDelete(med.id, med.name)}>
+                                    <Trash2 size={18} color="#ef4444" />
+                                    <Text style={[styles.actionBtnText, { color: '#ef4444' }]}>Delete</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-
-                        <View style={styles.medDetails}>
-                            <Text style={styles.medTimesText}>
-                                {med.times.length} {med.times.length === 1 ? 'time' : 'times'} a day ({med.times.join(', ')})
-                            </Text>
-                            <Text style={styles.medInventoryText}>
-                                {med.frequency} until {new Date(med.endDate).toLocaleDateString()}
-                            </Text>
-                        </View>
-
-                        <View style={styles.medActions}>
-                            <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(med)}>
-                                <Edit2 size={18} color="#64748b" />
-                                <Text style={styles.actionBtnText}>Edit</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.actionBtn, styles.deleteBtn]} onPress={() => handleDelete(med.id, med.name)}>
-                                <Trash2 size={18} color="#ef4444" />
-                                <Text style={[styles.actionBtnText, { color: '#ef4444' }]}>Delete</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ))}
-            </ScrollView>
+                    ))}
+                </ScrollView>
+            )}
 
             <TouchableOpacity
                 style={styles.fab}

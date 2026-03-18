@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, MoreHorizontal, Check, Phone, AlertTriangle, Pill, Bed, CheckCircle2, Clock, CheckCircle } from 'lucide-react-native';
 import { useMedicineStore } from '../../../libs/medicineStore';
 
-export default function PatientDetailScreen() {
+export default function MemberDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { patients, medicines, logs } = useMedicineStore();
@@ -47,7 +47,10 @@ export default function PatientDetailScreen() {
             totalDoses++;
             const log = logs.find(l => l.medicineId === m.id && l.date.startsWith(todayStr) && (l.expectedTime === t || !l.expectedTime));
 
-            const [h, min] = t.split(':').map(Number);
+            const [timeStr, period] = t.trim().split(' ');
+            let [h, min] = timeStr.split(':').map(Number);
+            if (period === 'PM' && h !== 12) h += 12;
+            if (period === 'AM' && h === 12) h = 0;
             const tMins = h * 60 + min;
             let status = 'upcoming';
 
@@ -102,8 +105,38 @@ export default function PatientDetailScreen() {
     else if (totalDoses === 0) overallStatusDesc = "No medicines scheduled";
     else if (takenDoses < totalDoses) overallStatusDesc = "On track for today";
 
+    const weeklyStats = React.useMemo(() => {
+        const today = new Date();
+        const chart = [0, 0, 0, 0, 0, 0, 0];
+        const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        const dayLabels = ['', '', '', '', '', '', ''];
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(today.getDate() - (6 - i));
+            const dateStr = d.toISOString().split('T')[0];
+            dayLabels[i] = days[d.getDay()];
+
+            let dayTotal = 0;
+            let dayTaken = 0;
+
+            patientMeds.forEach(m => {
+                m.times.forEach(t => {
+                    dayTotal++;
+                    const log = logs.find(l => l.medicineId === m.id && l.date.startsWith(dateStr) && (l.expectedTime === t || !l.expectedTime));
+                    if (log?.status === 'taken') {
+                        dayTaken++;
+                    }
+                });
+            });
+            chart[i] = dayTotal > 0 ? Math.round((dayTaken / dayTotal) * 100) : 0;
+        }
+
+        return { chart, dayLabels };
+    }, [patientMeds, logs]);
+
     const handleCall = () => {
-        Linking.openURL(`tel:1234567890`); // mock
+        Linking.openURL(`tel:911`); // Defaulting to emergency line as no phone numbers in V1 
     };
 
     return (
@@ -114,9 +147,7 @@ export default function PatientDetailScreen() {
                     <ChevronLeft size={24} color="#0f172a" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Family Detail</Text>
-                <TouchableOpacity style={styles.iconBtn}>
-                    <MoreHorizontal size={24} color="#0f172a" />
-                </TouchableOpacity>
+                <View style={{ width: 44 }} />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -158,29 +189,9 @@ export default function PatientDetailScreen() {
                     </View>
                 </View>
 
-                {/* Recent Alerts */}
-                {recentAlerts.length > 0 && (
-                    <View style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>Recent Alerts</Text>
-                            <TouchableOpacity>
-                                <Text style={styles.viewAllText}>View All</Text>
-                            </TouchableOpacity>
-                        </View>
 
-                        {recentAlerts.slice(0, 2).map((a, i) => (
-                            <View key={i} style={styles.alertCard}>
-                                <AlertTriangle size={24} color="#ef4444" />
-                                <View style={{ flex: 1, marginLeft: 12 }}>
-                                    <Text style={styles.alertTitle}>{a.title}</Text>
-                                    <Text style={styles.alertDesc}>{a.desc}</Text>
-                                </View>
-                            </View>
-                        ))}
-                    </View>
-                )}
 
-                {/* Weekly Overview Mock */}
+                {/* Weekly Overview */}
                 <View style={styles.chartSection}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>Weekly Overview</Text>
@@ -188,46 +199,18 @@ export default function PatientDetailScreen() {
                     </View>
 
                     <View style={styles.chartWrapper}>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 60 }]}>
-                                <View style={styles.chartBarFill} />
+                        {weeklyStats.chart.map((perc, idx) => (
+                            <View key={idx} style={styles.chartCol}>
+                                <View style={[styles.chartBarBg, { height: '100%' }]}>
+                                    <View style={[styles.chartBarFill, {
+                                        height: `${Math.max(10, perc)}%`,
+                                        borderTopLeftRadius: 4,
+                                        borderTopRightRadius: 4
+                                    }]} />
+                                </View>
+                                <Text style={[styles.chartDayText, idx === 6 && { fontWeight: '700', color: '#0f172a' }]}>{weeklyStats.dayLabels[idx]}</Text>
                             </View>
-                            <Text style={styles.chartDayText}>M</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 80 }]}>
-                                <View style={styles.chartBarFill} />
-                            </View>
-                            <Text style={styles.chartDayText}>T</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 100 }]}>
-                                <View style={styles.chartBarFill} />
-                            </View>
-                            <Text style={styles.chartDayText}>W</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 50 }]}>
-                                <View style={styles.chartBarFill} />
-                            </View>
-                            <Text style={styles.chartDayText}>T</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 110 }]}>
-                                <View style={styles.chartBarFill} />
-                            </View>
-                            <Text style={styles.chartDayText}>F</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarBg, { height: 90 }]}>
-                                <View style={styles.chartBarFill} />
-                            </View>
-                            <Text style={styles.chartDayText}>S</Text>
-                        </View>
-                        <View style={styles.chartCol}>
-                            <View style={[styles.chartBarActive, { height: 130 }]} />
-                            <Text style={[styles.chartDayText, { fontWeight: '700', color: '#0f172a' }]}>S</Text>
-                        </View>
+                        ))}
                     </View>
                 </View>
 
@@ -272,9 +255,6 @@ export default function PatientDetailScreen() {
                                                 <Text style={styles.itemTitle}>{item.med.name}</Text>
                                                 <Text style={styles.itemDesc}>{item.med.dosage} • Due {item.time}</Text>
                                             </View>
-                                            <TouchableOpacity style={styles.notifyBtn}>
-                                                <Text style={styles.notifyBtnText}>Notify</Text>
-                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 );
@@ -289,9 +269,6 @@ export default function PatientDetailScreen() {
                                                 <Text style={styles.itemTitle}>{item.med.name}</Text>
                                                 <Text style={[styles.itemDesc, { color: '#ef4444' }]}>{item.med.dosage} • Missed {item.time}</Text>
                                             </View>
-                                            <TouchableOpacity style={styles.notifyBtn}>
-                                                <Text style={styles.notifyBtnText}>Remind</Text>
-                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 );
@@ -362,10 +339,9 @@ const styles = StyleSheet.create({
     chartSection: { backgroundColor: '#fff', padding: 20, borderRadius: 16, borderWidth: 1, borderColor: '#f1f5f9', marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
     chartSub: { fontSize: 12, color: '#94a3b8' },
     chartWrapper: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 140, paddingTop: 16, paddingHorizontal: 8 },
-    chartCol: { alignItems: 'center', flex: 1, gap: 8 },
-    chartBarBg: { width: '100%', backgroundColor: 'rgba(25, 230, 111, 0.2)', borderTopLeftRadius: 4, borderTopRightRadius: 4, overflow: 'hidden' },
-    chartBarFill: { position: 'absolute', top: 0, left: 0, right: 0, height: 4, backgroundColor: '#19e66f' },
-    chartBarActive: { width: '100%', backgroundColor: '#19e66f', borderTopLeftRadius: 4, borderTopRightRadius: 4 },
+    chartCol: { alignItems: 'center', flex: 1, gap: 8, height: '100%' },
+    chartBarBg: { width: '100%', backgroundColor: 'rgba(25, 230, 111, 0.2)', borderTopLeftRadius: 4, borderTopRightRadius: 4, overflow: 'hidden', justifyContent: 'flex-end' },
+    chartBarFill: { width: '100%', backgroundColor: '#19e66f' },
     chartDayText: { fontSize: 10, color: '#94a3b8' },
 
     progressPill: { backgroundColor: 'rgba(25, 230, 111, 0.1)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },

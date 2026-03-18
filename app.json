@@ -2,7 +2,7 @@
   "expo": {
     "name": "HealthSync",
     "slug": "medicine_app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "medicineapp",
@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "com.healthsync.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -52,6 +52,12 @@
       "eas": {
         "projectId": "5d651add-f8ae-4dc4-be67-9af99fcc483c"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5d651add-f8ae-4dc4-be67-9af99fcc483c"
     }
   }
 }

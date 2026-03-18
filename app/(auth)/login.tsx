@@ -28,14 +28,17 @@ export default function Login() {
 
     const handleForgotPassword = async () => {
         if (!email) {
-            Alert.alert('Forgot Password', 'Please enter your email address first.');
+            Alert.alert('Email Required', 'Please enter your email address in the field above to receive a reset link.');
             return;
         }
         try {
             await resetPassword(email);
-            Alert.alert('Success', 'Password reset email sent. Please check your inbox.');
+            Alert.alert(
+                'Reset Email Sent',
+                `A password reset link has been sent to ${email}. If you don't see it, please check your spam folder.`
+            );
         } catch (e: any) {
-            Alert.alert('Error', e.message);
+            Alert.alert('Reset Failed', e.message);
         }
     };
 
@@ -81,8 +84,6 @@ export default function Login() {
                         onPress={handleLogin}
                         loading={loading}
                     />
-
-
 
                     <Text style={styles.switchText}>
                         Don&apos;t have an account?{' '}
@@ -178,9 +179,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     footer: {
-        marginTop: 'auto',
         paddingHorizontal: 24,
-        paddingTop: 32,
+        paddingTop: 24,
     },
 
     switchText: {

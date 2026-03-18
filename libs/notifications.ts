@@ -1,15 +1,27 @@
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 import { Medicine } from './medicineStore';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
         shouldPlaySound: true,
-        shouldSetBadge: false,
+        shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true
     }),
 });
+
+// Configure android channel for high priority
+if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('medication-reminders', {
+        name: 'Medication Reminders',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#19e66f',
+        sound: 'default',
+    });
+}
 
 export async function requestNotificationPermissions() {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -34,7 +46,10 @@ export async function cancelMedicineNotifications(notificationIds?: string[]) {
 
 export async function scheduleMedicineNotifications(med: Medicine): Promise<string[]> {
     const hasPermission = await requestNotificationPermissions();
-    if (!hasPermission || !med.reminderEnabled) return [];
+    if (!hasPermission) {
+        throw new Error('Notification permissions not granted');
+    }
+    if (!med.reminderEnabled) return [];
 
     let newIds: string[] = [];
 
@@ -44,13 +59,15 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
                 content: {
                     title: `Time for ${med.name}`,
                     body: `Dose: ${med.dosage}. Meal: ${med.mealRelation}`,
-                    sound: true,
+                    sound: 'default',
+                    priority: Notifications.AndroidNotificationPriority.MAX,
+                    data: { medicineId: med.id },
                 },
                 trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
                     seconds: 60,
                     repeats: true,
-                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL
-                } as any,
+                } as Notifications.TimeIntervalTriggerInput,
             });
             newIds.push(id);
         } else {
@@ -63,14 +80,15 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
                 content: {
                     title: `Time for ${med.name}`,
                     body: `Dose: ${med.dosage}. Meal: ${med.mealRelation}`,
-                    sound: true,
+                    sound: 'default',
+                    priority: Notifications.AndroidNotificationPriority.MAX,
+                    data: { medicineId: med.id },
                 },
                 trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DAILY,
                     hour: hours,
                     minute: minutes,
-                    repeats: true,
-                    type: Notifications.SchedulableTriggerInputTypes.CALENDAR
-                } as any,
+                } as Notifications.DailyTriggerInput,
             });
             newIds.push(id);
         }

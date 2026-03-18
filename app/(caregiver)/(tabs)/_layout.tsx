@@ -1,4 +1,4 @@
-import { Tabs , useRouter } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { LayoutGrid, Calendar, BarChart3, Settings } from 'lucide-react-native';
 
@@ -36,20 +36,7 @@ export default function CaregiverTabsLayout() {
                     tabBarIcon: ({ color }) => <LayoutGrid size={28} color={color} strokeWidth={2.5} />,
                 }}
             />
-            <Tabs.Screen
-                name="schedule"
-                options={{
-                    title: 'Schedule',
-                    tabBarIcon: ({ color }) => <Calendar size={28} color={color} strokeWidth={2.5} />,
-                }}
-            />
-            <Tabs.Screen
-                name="reports"
-                options={{
-                    title: 'Reports',
-                    tabBarIcon: ({ color }) => <BarChart3 size={28} color={color} strokeWidth={2.5} />,
-                }}
-            />
+
             <Tabs.Screen
                 name="settings"
                 options={{

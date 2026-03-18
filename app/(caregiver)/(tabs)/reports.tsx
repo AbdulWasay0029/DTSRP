@@ -64,7 +64,7 @@ export default function CaregiverReportsScreen() {
             <View style={styles.header}>
                 <View>
                     <Text style={styles.headerTitle}>History & Reports</Text>
-                    <Text style={styles.headerSubtitle}>Monitor patient adherence</Text>
+                    <Text style={styles.headerSubtitle}>Monitor family adherence</Text>
                 </View>
                 <TouchableOpacity style={styles.shareBtn}>
                     <Share size={20} color="#19e66f" />
@@ -73,12 +73,12 @@ export default function CaregiverReportsScreen() {
 
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 {patients.length === 0 ? (
-                    <Text style={{ textAlign: 'center', marginTop: 40, color: '#64748b' }}>No patients directly connected.</Text>
+                    <Text style={{ textAlign: 'center', marginTop: 40, color: '#64748b' }}>No family members connected.</Text>
                 ) : (
                     <>
                         {/* Patient Selector */}
                         <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>Select Patient</Text>
+                            <Text style={styles.sectionTitle}>Select Family Member</Text>
                         </View>
 
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 8 }}>

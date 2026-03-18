@@ -72,7 +72,8 @@ export default function AddMedicineScreen() {
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString(),
             mealRelation,
-            reminderEnabled: reminders
+            reminderEnabled: reminders,
+            createdAt: new Date().toISOString()
         });
         router.back();
     };
@@ -210,7 +211,7 @@ export default function AddMedicineScreen() {
                             <View style={styles.section}>
                                 <Text style={styles.label}>Frequency</Text>
                                 <View style={styles.freqRow}>
-                                    {['Once', 'Twice', 'Custom'].map(f => (
+                                    {['Once', 'Twice', '1 Min Test'].map(f => (
                                         <TouchableOpacity
                                             key={f}
                                             style={[styles.freqBtn, frequency === f && styles.freqBtnActive]}

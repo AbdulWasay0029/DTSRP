@@ -1,6 +1,6 @@
 import { Tabs, useRouter } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Home, Pill, Users, Settings, Plus } from 'lucide-react-native';
+import { Home, Pill, Settings, Plus } from 'lucide-react-native';
 
 
 export default function PatientTabsLayout() {
@@ -44,13 +44,7 @@ export default function PatientTabsLayout() {
                         tabBarIcon: ({ color }) => <Pill size={28} color={color} strokeWidth={2.5} />,
                     }}
                 />
-                <Tabs.Screen
-                    name="family"
-                    options={{
-                        title: 'Family',
-                        tabBarIcon: ({ color }) => <Users size={28} color={color} strokeWidth={2.5} />,
-                    }}
-                />
+
                 <Tabs.Screen
                     name="settings"
                     options={{

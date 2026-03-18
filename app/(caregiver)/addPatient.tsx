@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, ChevronRight, QrCode, Flashlight } from 'lucide-react-native';
 import { useMedicineStore } from '../../libs/medicineStore';
 
-export default function AddPatientScreen() {
+export default function LinkFamilyScreen() {
     const router = useRouter();
     const { connectPatient } = useMedicineStore();
     const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -131,7 +131,7 @@ export default function AddPatientScreen() {
                         onPress={handleConnect}
                         disabled={loading}
                     >
-                        <Text style={styles.connectBtnText}>{loading ? 'Connecting...' : 'Link Member'}</Text>
+                        <Text style={styles.connectBtnText}>{loading ? 'Connecting...' : 'Link Family Member'}</Text>
                         {!loading && <ChevronRight size={24} color="#0f172a" />}
                     </TouchableOpacity>
 
