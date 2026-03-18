@@ -47,10 +47,19 @@ export default function MemberDetailScreen() {
             totalDoses++;
             const log = logs.find(l => l.medicineId === m.id && l.date.startsWith(todayStr) && (l.expectedTime === t || !l.expectedTime));
 
-            const [timeStr, period] = t.trim().split(' ');
-            let [h, min] = timeStr.split(':').map(Number);
-            if (period === 'PM' && h !== 12) h += 12;
-            if (period === 'AM' && h === 12) h = 0;
+            let h = 0, min = 0;
+            if (t.includes(':')) {
+                const parts = t.trim().split(/[:\s]/); // Split by colon or space
+                h = parseInt(parts[0], 10);
+                min = parseInt(parts[1], 10);
+                
+                // If it was in AM/PM format (legacy data support)
+                if (t.toUpperCase().includes('PM') && h !== 12) h += 12;
+                if (t.toUpperCase().includes('AM') && h === 12) h = 0;
+            }
+            
+            if (isNaN(h) || isNaN(min)) return;
+            
             const tMins = h * 60 + min;
             let status = 'upcoming';
 

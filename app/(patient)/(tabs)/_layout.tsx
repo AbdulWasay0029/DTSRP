@@ -14,8 +14,7 @@ export default function PatientTabsLayout() {
                     tabBarActiveTintColor: '#19e66f',
                     tabBarInactiveTintColor: '#94a3b8',
                     tabBarStyle: {
-                        height: 80,
-                        paddingBottom: 24,
+                        paddingBottom: 32,
                         paddingTop: 12,
                         backgroundColor: '#ffffff',
                         borderTopWidth: 1,

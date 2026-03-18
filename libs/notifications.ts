@@ -57,48 +57,37 @@ export async function scheduleMedicineNotifications(med: Medicine): Promise<stri
     let newIds: string[] = [];
 
     for (const t of med.times) {
-        if (med.frequency === '1 Min Test') {
-            const id = await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `Time for ${med.name}`,
-                    body: `Dose: ${med.dosage}. Meal: ${med.mealRelation}`,
-                    sound: 'default',
-                    priority: Notifications.AndroidNotificationPriority.MAX,
-                    data: { medicineId: med.id },
-                    // @ts-ignore
-                    channelId: 'medication-reminders',
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                    seconds: 60,
-                    repeats: true,
-                } as Notifications.TimeIntervalTriggerInput,
-            });
-            newIds.push(id);
-        } else {
-            const [timeStr, period] = t.split(' ');
-            let [hours, minutes] = timeStr.split(':').map(Number);
-            if (period === 'PM' && hours !== 12) hours += 12;
-            if (period === 'AM' && hours === 12) hours = 0;
- 
-            const id = await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `Time for ${med.name}`,
-                    body: `Dose: ${med.dosage}. Meal: ${med.mealRelation}`,
-                    sound: 'default',
-                    priority: Notifications.AndroidNotificationPriority.MAX,
-                    data: { medicineId: med.id },
-                    // @ts-ignore
-                    channelId: 'medication-reminders',
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.DAILY,
-                    hour: hours,
-                    minute: minutes,
-                } as Notifications.DailyTriggerInput,
-            });
-            newIds.push(id);
-        }
+        // Unique identifier for each notification to prevent collision if multiple are scheduled at once
+        const uniqueId = `${med.id}_${t.replace(/[:\s]/g, '')}`;
+
+        // Expected format is "HH:mm" (24h)
+        const parts = t.split(':');
+        if (parts.length < 2) continue;
+        
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+
+        if (isNaN(hours) || isNaN(minutes)) continue;
+
+        const id = await Notifications.scheduleNotificationAsync({
+            identifier: uniqueId,
+            content: {
+                title: `Time for ${med.name}`,
+                body: `Dose: ${med.dosage}. Meal: ${med.mealRelation}`,
+                sound: 'default',
+                priority: Notifications.AndroidNotificationPriority.MAX,
+                data: { medicineId: med.id },
+                // @ts-ignore
+                channelId: 'medication-reminders',
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: hours,
+                minute: minutes,
+                preciseSchedules: true,
+            } as Notifications.DailyTriggerInput,
+        });
+        newIds.push(id);
     }
 
     return newIds;

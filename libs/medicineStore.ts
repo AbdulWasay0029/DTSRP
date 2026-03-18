@@ -193,49 +193,45 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
             snapshot.forEach((doc) => cs.push({ id: doc.id, ...doc.data() } as Connection));
             set({ connections: cs });
 
-            if (cs.length > 0) {
-                const patientIds = cs.filter(c => c.status === 'approved').map(c => c.patientId);
-                if (patientIds.length === 0) return;
-
-                // Fetch patients info in real-time
+            const approvedPatientIds = cs.filter(c => c.status === 'approved').map(c => c.patientId);
+            
+            if (approvedPatientIds.length > 0) {
+                // Fetch ALL patients to avoid query 'in' limit issues during real-time filtering
                 const qUsers = query(collection(db, 'Users'), where('role', '==', 'patient'));
                 onSnapshot(qUsers, (usersSnap) => {
                     const ps: PatientUser[] = [];
                     usersSnap.forEach(u => {
-                        if (patientIds.includes(u.id)) {
+                        if (approvedPatientIds.includes(u.id)) {
                             ps.push({ id: u.id, ...u.data() } as PatientUser);
                         }
                     });
                     set({ patients: ps });
                 });
 
-                // Fetch all their medicines and logs
-                const qMeds = query(collection(db, 'Medicines'), where('patientId', 'in', patientIds));
+                // Fetch linked medicines
+                const qMeds = query(collection(db, 'Medicines'), where('patientId', 'in', approvedPatientIds));
                 onSnapshot(qMeds, (s2) => {
                     const ms: Medicine[] = [];
                     s2.forEach((m) => ms.push({ id: m.id, ...m.data() } as Medicine));
                     set({ medicines: ms });
                 });
 
+                // Fetch linked logs (last 24h)
                 const startOfDay = new Date();
                 startOfDay.setHours(0, 0, 0, 0);
                 const qLogs = query(collection(db, 'Logs'), where('date', '>=', startOfDay.toISOString()));
                 onSnapshot(qLogs, async (s3) => {
                     const ls: MedLog[] = [];
-                    s3.forEach(l => ls.push({ id: l.id, ...l.data() } as MedLog));
+                    s3.forEach(l => {
+                        const data = l.data();
+                        if (approvedPatientIds.includes(data.patientId)) {
+                            ls.push({ id: l.id, ...data } as MedLog);
+                        }
+                    });
                     set({ logs: ls });
                 });
-
-                // Start missed dose periodic checker for caregivers checking patients
-                if (!(get() as any)._caregiverChecker) {
-                    const interval = setInterval(() => {
-                        const state = get();
-                        // Note: To simplify, caregivers running the app shouldn't automate DB commits for the patient 
-                        // to avoid race conditions. Only the patient app running does DB missed marking. 
-                        // The caregiver simply observes the DB. 
-                    }, 60000);
-                    set({ _caregiverChecker: interval } as any);
-                }
+            } else {
+                set({ patients: [], medicines: [], logs: [] });
             }
         });
     },
@@ -274,33 +270,22 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
 
     markTaken: async (medicineId, status, timeStr) => {
         const todayStr = new Date().toISOString().split('T')[0];
+        const user = useAuthStore.getState().user;
+        if (!user) return;
 
         if (timeStr) {
             const deterministicId = `${medicineId}_${todayStr}_${timeStr.replace(/[\s:]/g, '')}`;
-            const user = useAuthStore.getState().user;
-            await updateDoc(doc(db, 'Logs', deterministicId), {
+            await setDoc(doc(db, 'Logs', deterministicId), {
                 medicineId,
-                patientId: user?.uid,
+                patientId: user.uid,
                 date: new Date().toISOString(),
                 status,
                 expectedTime: timeStr
-            }).catch(async (e) => {
-                // If it doesn't exist to update, firmly set it (document creation)
-                import('firebase/firestore').then(({ setDoc }) => {
-                    setDoc(doc(db, 'Logs', deterministicId), {
-                        medicineId,
-                        patientId: user?.uid,
-                        date: new Date().toISOString(),
-                        status,
-                        expectedTime: timeStr
-                    });
-                });
-            });
+            }, { merge: true });
         } else {
-            const user = useAuthStore.getState().user;
             await addDoc(collection(db, 'Logs'), {
                 medicineId,
-                patientId: user?.uid,
+                patientId: user.uid,
                 date: new Date().toISOString(),
                 status
             });
@@ -311,14 +296,17 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
         const qUsers = query(collection(db, 'Users'), where('inviteCode', '==', inviteCode));
         const qs = await getDocs(qUsers);
         if (!qs.empty) {
+            const patientData = qs.docs[0].data();
             const patientId = qs.docs[0].id;
-            const user = useAuthStore.getState().user;
-            if (user) {
-                const connectionId = `${user.uid}_${patientId}`;
-                await setDoc(doc(db, 'Connections', connectionId), {
-                    patientId,
-                    caregiverId: user.uid,
-                    status: 'approved'
+            const currentUser = useAuthStore.getState().user;
+
+            if (currentUser) {
+                const connId = `${currentUser.uid}_${patientId}`;
+                await setDoc(doc(db, 'Connections', connId), {
+                    caregiverId: currentUser.uid,
+                    patientId: patientId,
+                    status: 'approved',
+                    createdAt: new Date().toISOString(),
                 });
             }
         } else {

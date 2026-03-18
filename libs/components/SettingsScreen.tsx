@@ -97,17 +97,30 @@ export default function SettingsScreen() {
                     </TouchableOpacity>
                 </View>
 
-                    {profile?.role === 'patient' && (
-                        <View style={[styles.section, { marginTop: 24 }]}>
-                            <Text style={styles.sectionLabel}>YOUR INVITE CODE</Text>
-                            <View style={styles.inviteCodeBox}>
-                                <Text style={styles.inviteCodeText}>{profile?.inviteCode}</Text>
+                {/* Invite Code Section */}
+                {profile?.role === 'patient' && (
+                    <View style={[styles.section, { marginTop: 24 }]}>
+                        <Text style={styles.sectionLabel}>YOUR INVITE CODE</Text>
+                        <TouchableOpacity 
+                            style={styles.inviteCodeBox} 
+                            onPress={() => {
+                                if (profile?.inviteCode) {
+                                    require('react-native').Clipboard.setString(profile.inviteCode);
+                                    Alert.alert('Copied!', 'Invite code copied to clipboard.');
+                                }
+                            }}
+                        >
+                            <Text style={styles.inviteCodeText}>{profile?.inviteCode}</Text>
+                            <View style={styles.copyBadge}>
+                                <Copy size={16} color="#64748b" />
+                                <Text style={styles.copyText}>Tap to copy</Text>
                             </View>
-                            <Text style={{ fontSize: 13, color: '#64748b', textAlign: 'center', marginTop: -8, marginBottom: 16 }}>
-                                Share this with guardians so they can monitor you.
-                            </Text>
-                        </View>
-                    )}
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 13, color: '#64748b', textAlign: 'center', marginTop: -8, marginBottom: 16 }}>
+                            Share this with guardians so they can monitor you.
+                        </Text>
+                    </View>
+                )}
 
                 {/* Logout Section */}
                 <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut}>
@@ -154,4 +167,6 @@ const styles = StyleSheet.create({
 
     inviteCodeBox: { backgroundColor: '#f8fafc', padding: 20, borderRadius: 12, alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: '#e2e8f0' },
     inviteCodeText: { fontSize: 32, fontWeight: '800', color: '#0f172a', letterSpacing: 8 },
+    copyBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, backgroundColor: 'rgba(15, 23, 42, 0.05)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 99 },
+    copyText: { fontSize: 11, fontWeight: '700', color: '#64748b', textTransform: 'uppercase' },
 });

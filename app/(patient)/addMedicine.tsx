@@ -57,7 +57,11 @@ export default function AddMedicineScreen() {
         }
     };
 
-    const formatTimeStr = (date: Date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formatTimeStr = (date: Date) => {
+        const h = date.getHours();
+        const m = date.getMinutes();
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    };
     const formatDateStr = (date: Date) => date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
 
     const handleSave = async () => {
@@ -211,19 +215,11 @@ export default function AddMedicineScreen() {
                             <View style={styles.section}>
                                 <Text style={styles.label}>Frequency</Text>
                                 <View style={styles.freqRow}>
-                                    {['Once', 'Twice', '1 Min Test'].map(f => (
+                                    {['Once', 'Twice'].map(f => (
                                         <TouchableOpacity
                                             key={f}
                                             style={[styles.freqBtn, frequency === f && styles.freqBtnActive]}
-                                            onPress={() => {
-                                                setFrequency(f);
-                                                if (f === '1 Min Test') {
-                                                    // Set first time to 1 min from now so it shows up instantly
-                                                    const d = new Date();
-                                                    d.setMinutes(d.getMinutes() + 1);
-                                                    setTimes([d]);
-                                                }
-                                            }}
+                                            onPress={() => setFrequency(f)}
                                         >
                                             <Text style={[styles.freqText, frequency === f && styles.freqTextActive]}>{f}</Text>
                                         </TouchableOpacity>
