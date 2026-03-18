@@ -1,73 +1,60 @@
-# 🏥 HealthSync: Premium Medicine & Family Monitor
+# 🏥 HealthSync: Real-time Medical Assistant (Firebase Version)
 
-<p align="center">
-  <img src="./assets/images/icon.png" width="128" height="128" />
-</p>
-
-<p align="center">
-  <strong>The ultimate glassmorphic medication reminder and family synchronization ecosystem.</strong>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-19e66f?style=for-the-badge&logo=react" />
-  <img src="https://img.shields.io/badge/Architecture-Clean%20%26%20Modular-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Security-Firebase%20Hardened-ffca28?style=for-the-badge&logo=firebase" />
-</p>
+**HealthSync** is a professional-grade medical reminder and family monitoring application designed to ensure 100% medication adherence. Built with the "Real-time Mirroring" architecture, it provides instant updates between patients and their family guardians.
 
 ---
 
-## ✨ Experience the Future of Caretelling
+## 🚀 Key Features
+- **High-Priority Trigger System:** Standard-compliant exact alarms for Android 14+ that bypass power-saving and DOZE mode.
+- **Family Sync Logic:** Live synchronization of dose intake status between patients and guardians.
+- **Guardianship Oversight:** Real-time dashboard for guardians to monitor missed, pending, and taken doses of their loved ones.
+- **Smart 24-Hour Normalization:** Locale-independent time engine that prevents scheduling crashes across different language settings.
+- **Ghost Session Cleanup:** Automated authentication hardening to ensure a fresh, consistent user profile state.
 
-HealthSync isn't just a reminder app; it's a bridge between care and technology. Designed with a **Premium Glassmorphic UI**, it provides a soothing, high-contrast experience for patients while offering powerful real-time monitoring for caregivers.
-
-### 🛡️ Core Pillars
-
-*   **🧪 Intelligent Scheduling**: Add complex medication cycles with personalized reminders and meal relations.
-*   **👨‍👩‍👧‍👦 Family Sync**: Real-time adherence tracking. Caregivers get notified the second a dose is missed or an emergency is triggered.
-*   **🚨 SOS Protocol**: One-tap emergency alerts that bypass silent modes to reach family members instantly.
-*   **📊 Adherence Intelligence**: Deep insights into medication history with automated missed-dose detection.
-*   **🔒 Fort-Knox Security**: Production-grade Firestore rules ensuring data is ONLY visible to approved caregivers.
-
----
-
-## 🛠️ Tech Stack & Architecture
-
-| Layer | Technology |
-| :--- | :--- |
-| **Frontend** | React Native (Expo) |
-| **Styling** | Vanilla CSS-in-JS + Glassmorphism |
-| **State** | Zustand (Global Persistence) |
-| **Backend** | Firebase (Auth, Firestore) |
-| **Realtime** | Firestore Snapshots & Triggers |
-| **Push** | Expo Push Notifications |
+## 🛠️ Tech Stack
+- **Frontend:** React Native (Expo SDK 51+)
+- **Backend:** Google Cloud Firebase (Firestore & Auth)
+- **State Management:** Zustand + Context API
+- **Local Persistence:** AsyncStorage
+- **Notifications:** Expo Notifications with High-Priority Android Channels
 
 ---
 
-## 🚀 Deployment & Build
+## 📦 Installation & Setup
 
-The project is pre-configured for **EAS (Expo Application Services)** production builds.
+### 1. Prerequisites
+- Node.js (v18+)
+- Expo GO (on mobile) or Android Studio / Xcode (for emulators)
 
-### To generate a Preview APK:
+### 2. Install Dependencies
 ```bash
-eas build -p android --profile preview
+npm install
 ```
 
-### Development Setup:
-1.  Clone & Install: `npm install`
-2.  Setup Env: Create `.env` with your Firebase config.
-3.  Launch: `npx expo start`
+### 3. Firebase Configuration
+Create a `.env` or `libs/firebase.ts` file with your credentials:
+- `apiKey`
+- `authDomain`
+- `projectId`
+- `storageBucket`
+- `messagingSenderId`
+- `appId`
+
+### 4. Run Locally
+```bash
+npm run start
+```
 
 ---
 
-## 🎨 Design Language
+## 🏗️ Technical Architecture
+HealthSync utilizes **Firestore Snapshot Listeners**. When a patient marks a dose as taken on their device, the guardian's dashboard is updated in **<100ms**, eliminating the need for constant phone checks or manual updates.
 
-HealthSync utilizes a **Dynamic Design** system:
-- **Primary Color**: `#19e66f` (Vibrant Emerald)
-- **Aesthetics**: Translucent surfaces, subtle micro-animations (via Reanimated), and modern typography.
-- **Adaptive Icons**: Fully optimized for Android 13+ themed icons and bouncy adaptive launcher effects.
+## 🔒 Security
+- **Role-Based Access Control (RBAC):** Strict separation of Patient and Guardian flows.
+- **Data Protection:** Profile doc-existence checks during the `onAuthStateChanged` loop to ensure stale-session protection.
 
 ---
 
-<p align="center">
-  Built with ❤️ by HealthSync Team
-</p>
+**Built with Precision for 100% Adherence.**
+**Author:** Antigravity AI Engine
